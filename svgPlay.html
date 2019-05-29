@@ -64,25 +64,76 @@ function pathArrayToString(pathArray){
     return segmentStrings.join(" ");
 }
 
+function removeVHFromPath(pathArray){
+    var currentPos = {x: 0, y: 0};
+    var pathSegments = [];
+    pathArray.forEach(function(seg, i){
+        switch(seg[0]){
+            case "M":
+                currentPos.x = seg[1];
+                currentPos.y = seg[2];
+                pathSegments.push(seg);
+                break;
+            case "L":
+                currentPos.x = seg[1];
+                currentPos.y = seg[2];
+                pathSegments.push(seg);
+                break;
+            case "S":
+                currentPos.x = seg[3];
+                currentPos.y = seg[4];
+                pathSegments.push(seg);
+                break;
+            case "C":
+                currentPos.x = seg[5];
+                currentPos.y = seg[6];
+                pathSegments.push(seg);
+                break;
+            case "V":
+                pathSegments.push(["L", currentPos.x, currentPos.y, currentPos.x, seg[1]]);
+                currentPos.y = seg[1]
+                break;
+            case "H":
+                pathSegments.push(["L", currentPos.x, currentPos.y, seg[1], currentPos.y]);
+                currentPos.x = seg[1];
+                break;
+            case "Z":
+                pathSegments.push(seg);
+                break;
+            default :
+                console.log("unanticipated segment", seg)
+        }
+    });
+    return pathSegments;
+}
+
+function replaceVH(ind){
+    var newPath = removeVHFromPath(baseArrays[ind]);
+    console.log(baseArrays[ind]);
+    console.log(newPath);
+    var stringPath = pathArrayToString(newPath);
+    letters[ind].plot(stringPath);
+}
+
 function setup(){
 
 }
 
 function draw(){
     var time = Date.now()/1000.;
-    letters.forEach(function(letter, i){
-        var m = matricies[i];
-        var phase = i/letters.length * PI*2 + PI; 
-        var rad = 0.09;
-        letters[i].transform({
-            // a: m.a + rad * Math.sin(time + phase),
-            b: m.b + rad * Math.cos(time + phase),
-            // c: m.c + rad * Math.sin(time + phase), 
-            d: m.d + rad * Math.cos(time + phase), 
-            // e: m.e + rad * Math.sin(time + phase), 
-            // f: m.f + rad * Math.cos(time + phase)
-        });
-    });
+    // letters.forEach(function(letter, i){
+    //     var m = matricies[i];
+    //     var phase = i/letters.length * PI*2 + PI; 
+    //     var rad = 0.09;
+    //     letters[i].transform({
+    //         // a: m.a + rad * Math.sin(time + phase),
+    //         b: m.b + rad * Math.cos(time + phase),
+    //         // c: m.c + rad * Math.sin(time + phase), 
+    //         d: m.d + rad * Math.cos(time + phase), 
+    //         // e: m.e + rad * Math.sin(time + phase), 
+    //         // f: m.f + rad * Math.cos(time + phase)
+    //     });
+    // });
     
 }
 
