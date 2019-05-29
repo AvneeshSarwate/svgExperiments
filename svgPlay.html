@@ -48,13 +48,43 @@
 <script type="text/javascript">
 var svgDoc = SVG.adopt($("#eyebeam")[0]);
 var letters = svgDoc.children()[0].children();
-letters.map( (p, i) => setTimeout(() => p.animate(500*2 ).rotate(360*2).skew(0, 0), i*100) );
+var baseArrays = letters.map(elem => elem.array());
+var matricies = letters.map(elem => elem.matrixify());
+var spin = () => letters.map( (p, i) => setTimeout(() => p.animate(500*2, "=").rotate(360*2), i*100) );
+function mapPathArray(pathArray, mapFunc){
+    return pathArray.map(function(segment, ind){
+        var newSegmentArray = [segment[0]];
+        var newSegmentPoints = segment.slice(1).map(num => mapFunc(num));
+        return newSegmentArray.concat(newSegmentPoints);
+    });
+}
+
+function pathArrayToString(pathArray){
+    var segmentStrings = pathArray.map(segment => segment[0]+segment.slice(1).join(" "));
+    return segmentStrings.join(" ");
+}
+
 function setup(){
 
 }
 
 function draw(){
-
+    var time = Date.now()/1000.;
+    letters.forEach(function(letter, i){
+        var m = matricies[i];
+        var phase = i/letters.length * PI*2 + PI; 
+        var rad = 0.09;
+        letters[i].transform({
+            // a: m.a + rad * Math.sin(time + phase),
+            b: m.b + rad * Math.cos(time + phase),
+            // c: m.c + rad * Math.sin(time + phase), 
+            d: m.d + rad * Math.cos(time + phase), 
+            // e: m.e + rad * Math.sin(time + phase), 
+            // f: m.f + rad * Math.cos(time + phase)
+        });
+    });
+    
 }
+
 </script>
 </html>
