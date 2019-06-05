@@ -87,11 +87,11 @@ function removeVHFromPath(pathArray){
                 pathSegments.push(seg);
                 break;
             case "V":
-                pathSegments.push(["L", currentPos.x, currentPos.y, currentPos.x, seg[1]]);
+                pathSegments.push(["L", currentPos.x, seg[1]]);
                 currentPos.y = seg[1]
                 break;
             case "H":
-                pathSegments.push(["L", currentPos.x, currentPos.y, seg[1], currentPos.y]);
+                pathSegments.push(["L", seg[1], currentPos.y]);
                 currentPos.x = seg[1];
                 break;
             case "Z":
@@ -105,35 +105,28 @@ function removeVHFromPath(pathArray){
 }
 
 function pathCoordinateTransform(pathArray, transform){
+    var pathSegments = [];
     pathArray.forEach(function(seg, i){
         switch(seg[0]){
             case "M":
-                currentPos.x = seg[1];
-                currentPos.y = seg[2];
-                pathSegments.push(seg);
-                break;
+                var p1 = transform({x: seg[1], y: seg[2]});
+                pathSegments.push(["M", p1.x, p1.y]);
+                breal;
             case "L":
-                currentPos.x = seg[1];
-                currentPos.y = seg[2];
-                pathSegments.push(seg);
+                var p1 = transform({x: seg[1], y: seg[2]});
+                pathSegments.push(["L", p1.x, p1.y]);
                 break;
             case "S":
-                currentPos.x = seg[3];
-                currentPos.y = seg[4];
-                pathSegments.push(seg);
+                var p1 = transform({x: seg[1], y: seg[2]});
+                var p2 = transform({x: seg[3], y: seg[4]});
+                pathSegments.push(["S", p1.x, p1.y, p2.x, p2.y]);
+                break;
                 break;
             case "C":
-                currentPos.x = seg[5];
-                currentPos.y = seg[6];
-                pathSegments.push(seg);
-                break;
-            case "V":
-                pathSegments.push(["L", currentPos.x, currentPos.y, currentPos.x, seg[1]]);
-                currentPos.y = seg[1]
-                break;
-            case "H":
-                pathSegments.push(["L", currentPos.x, currentPos.y, seg[1], currentPos.y]);
-                currentPos.x = seg[1];
+                var p1 = transform({x: seg[1], y: seg[2]});
+                var p2 = transform({x: seg[3], y: seg[4]});
+                var p3 = transform({x: seg[5], y: seg[6]});
+                pathSegments.push(["C", p1.x, p1.y, p2.x, p2.y, p3.x, p3.y]);
                 break;
             case "Z":
                 pathSegments.push(seg);
@@ -143,6 +136,10 @@ function pathCoordinateTransform(pathArray, transform){
         }
     });
     return pathSegments;
+}
+
+function polygonCoordinateTransform(pointArray, transform){
+    return pointArray.map(p => ({x: p[0], y: p[1]})).map(p => transform(p)).map(p => [p.x, p.y]);
 }
 
 function replaceVH(ind){
