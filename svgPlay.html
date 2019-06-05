@@ -196,10 +196,21 @@ function draw(){
     var width = 1920; svgDoc.children()[0].width();
     var height = 1440; svgDoc.children()[0].height();
     var time = Date.now()/1000.;
+
+    var transformFunc = xy => normExec(xy, xyN => {
+        var warp = coordWarp(xyN, time/4, .5*sinN(time), 20);
+        return warp;
+    }, 1920, 1440);
+    var foldRes = 50;// + 50 * sinN(time/10);
+    var t2 = time/10;
+    // transformFunc = xy => ({x: xy.x*.7 + sinN(t2+xy.x/width*PI*foldRes)*0.3*width*sinN(time/1.2), 
+    //                         y: xy.y*.7 + cosN(t2+xy.y/height*PI*foldRes)*0.3*height*sinN(time/1.4)});
+    // transformFunc = a => ({x:a.x * sinN(time), y: a.y * sinN(time)});
+
     letters.forEach(function(letter, i){
-        // var m = matricies[i];
-        // var phase = i/letters.length * PI*2 + PI; 
-        // var rad = sinN(time *5+ phase);
+        var m = matricies[i];
+        var phase = i/letters.length * PI*(1+10*sinN(time/3.3)); 
+        var rad = sinN(time *5+ phase);
         // letter.transform({
         //     a: 1 * Math.sin(time + phase) + 1,
         //     b: 1 * Math.sin(time + phase) + 1,
@@ -212,15 +223,14 @@ function draw(){
         // var transPos = normExec(letterPos, xy => coordWarp(xy, time/2.5, 0.5, 50), width, height);
         // letter.x(transPos.x);
         // letter.y(transPos.y);
-        var transformFunc = xy => normExec(xy, xyN => coordWarp(xyN, time/10, 20, .5), width, height);
-        var foldRes = 50;// + 50 * sinN(time/10);
-        var t2 = time/10;
-        var transformFunc = xy => ({x: xy.x*.7 + sinN(t2+xy.x/width*PI*foldRes)*0.3*width, 
-                                    y: xy.y*.7 + cosN(t2+xy.y/height*PI*foldRes)*0.3*height});
+        
+        // letter.color()
+        
         var mapFunction = letter.type == "path" ? pathCoordinateTransform : polygonCoordinateTransform;
         letter.plot(mapFunction(baseArrays[i], transformFunc));
+        letter.fill({opacity: sinN(time/4 + phase*(.5 + cosN(time*5)*.5)/2. )});
     });
-    
+    var x = 5;   
 }
 
 </script>
