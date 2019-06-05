@@ -111,7 +111,7 @@ function pathCoordinateTransform(pathArray, transform){
             case "M":
                 var p1 = transform({x: seg[1], y: seg[2]});
                 pathSegments.push(["M", p1.x, p1.y]);
-                breal;
+                break;
             case "L":
                 var p1 = transform({x: seg[1], y: seg[2]});
                 pathSegments.push(["L", p1.x, p1.y]);
@@ -182,6 +182,7 @@ var letters = svgDoc.children()[0].children();
 var baseArrays = letters.map(elem => elem.array());
 var basePositions = letters.map(letter => ({x: letter.x(), y: letter.y()}));
 letters.forEach((letter, i) => letter.type == "path" ? replaceVH(i) : null);
+baseArrays = letters.map(elem => elem.array());
 var matricies = letters.map(elem => elem.matrixify());
 var spin = () => letters.map( (p, i) => setTimeout(() => p.animate(500*2, "=").rotate(360*2), i*100) );
 
@@ -207,10 +208,17 @@ function draw(){
         //     // e: m.e + rad * Math.sin(time + phase) * 100 + (width/2  - letter.x()) * sinN(time/1.1), 
         //     // f: m.f + rad * Math.cos(time + phase) * 100 + (height/2  - letter.y()) * sinN(time/1.1)
         // });
-        var letterPos = basePositions[i];//{x: letter.x(), y: letter.y()};
-        var transPos = normExec(letterPos, xy => coordWarp(xy, time/2.5, 0.5, 50), width, height);
-        letter.x(transPos.x);
-        letter.y(transPos.y);
+        // var letterPos = basePositions[i];//{x: letter.x(), y: letter.y()};
+        // var transPos = normExec(letterPos, xy => coordWarp(xy, time/2.5, 0.5, 50), width, height);
+        // letter.x(transPos.x);
+        // letter.y(transPos.y);
+        var transformFunc = xy => normExec(xy, xyN => coordWarp(xyN, time/10, 20, .5), width, height);
+        var foldRes = 50;// + 50 * sinN(time/10);
+        var t2 = time/10;
+        var transformFunc = xy => ({x: xy.x*.7 + sinN(t2+xy.x/width*PI*foldRes)*0.3*width, 
+                                    y: xy.y*.7 + cosN(t2+xy.y/height*PI*foldRes)*0.3*height});
+        var mapFunction = letter.type == "path" ? pathCoordinateTransform : polygonCoordinateTransform;
+        letter.plot(mapFunction(baseArrays[i], transformFunc));
     });
     
 }
