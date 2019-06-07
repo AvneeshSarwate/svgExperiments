@@ -7,14 +7,11 @@
         <script type="text/javascript" src="p5.dom.js"></script>
         <script type="text/javascript" src="jquery.js"></script>
         <script type="text/javascript" src="svg.js"></script>
-        <script type="text/javascript" src="svg.draggable.js"></script>
-        <script type="text/javascript" src="svg.draw.js"></script>
-        <script type="text/javascript" src="svg.select.js"></script>
-        <script type="text/javascript" src="svg.resize.js"></script>
     </head> 
     <body> 
         <svg  id="eyebeam" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
      viewBox="0 0 1920 1440" style="enable-background:new 0 0 1920 1440;" xml:space="preserve">
+            <rect width="100%" height="100%"></rect>
             <g xmlns="http://www.w3.org/2000/svg">
                 <polygon points="37.13,218.68 218.97,218.68 218.97,182.31 73.5,182.31 73.5,145.94 218.97,145.94 218.97,109.57 73.5,109.57    73.5,73.2 218.97,73.2 218.97,36.84 37.13,36.84  "/>
                 <polygon points="417.58,36.84 372.72,36.84 326.66,105.93 280.6,36.84 235.74,36.84 306.6,143.12 306.6,218.68 346.72,218.68    346.72,143.12  "/>
@@ -41,20 +38,19 @@
                 <polygon points="218.97,427.31 182.6,427.31 182.6,572.78 146.23,572.78 146.23,427.31 109.87,427.31 109.87,572.78 73.5,572.78    73.5,427.31 37.13,427.31 37.13,609.15 218.97,609.15  "/>
                 <path d="M218.97,269.83v-39.2L37.13,303.37v36.37l181.84,72.74v-39.2l-36.37-14.55v-74.35L218.97,269.83z M146.23,344.18   l-56.57-22.63l56.57-22.63V344.18z"/>    
             </g>
-        </svg>
+        </svg>  
+
+<!--     
+        IMAGE
+        <img/>
+        
+        CANVAS
+        <canvas></canvas> -->
 
     </body> 
 
 <script type="text/javascript">
 var svgDoc = SVG.adopt($("#eyebeam")[0]);
-
-function mapPathArray(pathArray, mapFunc){
-    return pathArray.map(function(segment, ind){
-        var newSegmentArray = [segment[0]];
-        var newSegmentPoints = segment.slice(1).map(num => mapFunc(num));
-        return newSegmentArray.concat(newSegmentPoints);
-    });
-}
 
 function pathArrayToString(pathArray){
     var segmentStrings = pathArray.map(segment => segment[0]+segment.slice(1).join(" "));
@@ -178,7 +174,7 @@ function coordWarp(stN, t2, rad, numBalls){
     return warp;
 }
 
-var letters = svgDoc.children()[0].children();
+var letters = svgDoc.children()[1].children();
 var baseArrays = letters.map(elem => elem.array());
 var basePositions = letters.map(letter => ({x: letter.x(), y: letter.y()}));
 letters.forEach((letter, i) => letter.type == "path" ? replaceVH(i) : null);
@@ -186,11 +182,34 @@ baseArrays = letters.map(elem => elem.array());
 var matricies = letters.map(elem => elem.matrixify());
 var spin = () => letters.map( (p, i) => setTimeout(() => p.animate(500*2, "=").rotate(360*2), i*100) );
 
+function renderSVGtoCanvas(){
+    var svg = document.querySelector('svg');
+    var img = document.querySelector('img');
+    var canvas = document.querySelector('canvas');
 
+    // get svg data
+    var xml = new XMLSerializer().serializeToString(svg);
+
+    // make it base64
+    var svg64 = btoa(xml);
+    var b64Start = 'data:image/svg+xml;base64,';
+
+    // prepend a "header"
+    var image64 = b64Start + svg64;
+
+    // set it as the source of the img element
+    img.src = image64;
+
+    // draw the image onto the canvas
+    canvas.getContext('2d').drawImage(img, 0, 0);
+}
 
 function setup(){
 
 }
+
+svgDoc.children()[0].fill("black")
+letters.map(letter => letter.fill("white"))
 
 function draw(){
     var width = 1920; svgDoc.children()[0].width();
@@ -228,9 +247,9 @@ function draw(){
         
         var mapFunction = letter.type == "path" ? pathCoordinateTransform : polygonCoordinateTransform;
         letter.plot(mapFunction(baseArrays[i], transformFunc));
-        letter.fill({opacity: sinN(time/4 + phase*(.5 + cosN(time*5)*.5)/2. )});
+        letter.fill({opacity: sinN(time/4 + phase*(.5 + cosN(time*5)*.5)/2.)});
     });
-    var x = 5;   
+    // renderSVGtoCanvas();
 }
 
 </script>
