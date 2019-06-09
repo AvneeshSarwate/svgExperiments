@@ -283,6 +283,7 @@ void main () {
     vec2 cent = vec2(0.5); 
     
     vec4 svg = texture(svgFrame, quant(stN, 10.+1000.*sinN(quant(time/4.+stN.x, 10.)*PI))); 
-    
-    fragColor = vec4(vec3(svg.rgb), 1);
+    vec4 bb = texture(backbuffer, stN);
+
+    fragColor = mix(bb, svg, 0.05);
 }

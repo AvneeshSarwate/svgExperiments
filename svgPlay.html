@@ -65,7 +65,7 @@
                 d="M218.97,269.83v-39.2L37.13,303.37v36.37l181.84,72.74v-39.2l-36.37-14.55v-74.35L218.97,269.83z M146.23,344.18   l-56.57-22.63l56.57-22.63V344.18z" />
         </g>
     </svg>
-    <canvas id="glCanvas"></canvas>
+    <canvas id="glCanvas" width="1200" height="900"></canvas>
 </body>
 <script id="vs" type="notjs">
 #version 300 es
@@ -324,7 +324,7 @@ fragColor = col;
 
             var mapFunction = letter.type == "path" ? pathCoordinateTransform : polygonCoordinateTransform;
             letter.plot(mapFunction(baseArrays[i], transformFunc));
-            letter.fill({ opacity: sinN(time / 4 + phase) });
+            // letter.fill({ opacity: sinN(time / 4 + phase) });
         });
 
 
@@ -361,13 +361,18 @@ fragColor = col;
 
     //setting up 
     const gl = document.querySelector("#glCanvas").getContext("webgl2");
+    const frameBuffers = [twgl.createFramebufferInfo(gl), twgl.createFramebufferInfo(gl)];
 
     const arrays = {
         position: [-1, -1, 0, 1, -1, 0, -1, 1, 0, -1, 1, 0, 1, -1, 0, 1, 1, 0],
     };
     const bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
 
-    const textures = twgl.createTextures(gl, {svgFrame: {src: svgCanvas}})
+    const textures = twgl.createTextures(gl, {
+        svgFrame: {src: svgCanvas}
+    });
+
+    let frameBufferIndex = 0;
 
     function render(time) {
         twgl.resizeCanvasToDisplaySize(gl.canvas);
@@ -378,13 +383,19 @@ fragColor = col;
         const uniforms = {
             time: time * 0.001,
             resolution: [gl.canvas.width, gl.canvas.height],
-            svgFrame: textures.svgFrame
+            svgFrame: textures.svgFrame,
+            backbuffer: frameBuffers[frameBufferIndex].attachments[0]
         };
 
         gl.useProgram(programInfo.program);
         twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo);
         twgl.setUniforms(programInfo, uniforms);
+        twgl.bindFramebufferInfo(gl, frameBuffers[(frameBufferIndex+1)%2]);
         twgl.drawBufferInfo(gl, bufferInfo);
+        twgl.bindFramebufferInfo(gl);
+        twgl.drawBufferInfo(gl, bufferInfo);
+
+        frameBufferIndex = (frameBufferIndex+1)%2;
 
         requestAnimationFrame(render);
     }
