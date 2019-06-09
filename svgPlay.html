@@ -68,18 +68,22 @@
     <canvas id="glCanvas"></canvas>
 </body>
 <script id="vs" type="notjs">
-attribute vec4 position;
+#version 300 es
+in vec4 position;
 
 void main() {
 gl_Position = position;
 }
 </script>
 <script id="fs" type="notjs">
+#version 300 es
 precision mediump float;
 
 uniform vec2 resolution;
 uniform float time;
+uniform sampler2D svgFrame;
 
+out vec4 fragColor;
 void main() {
 vec2 uv = gl_FragCoord.xy / resolution;
 float color = 0.0;
@@ -89,18 +93,18 @@ color += sin( uv.y * sin( time / 2.0 ) * 40.0 ) + cos( uv.x * sin( time / 1.70 )
 color += sin( uv.x * sin( time / 1.0 ) * 10.0 ) + sin( uv.y * sin( time / 3.50 ) * 80.0 );
 color *= sin( time / 10.0 ) * 0.5;
 
-gl_FragColor = vec4( vec3( color * 0.5, sin( color + time / 2.5 ) * 0.75, color ), 1.0 );
+vec4 col = vec4( vec3( color * 0.5, sin( color + time / 2.5 ) * 0.75, color ), 1.0 );
+col = texture(svgFrame, uv);
+
+fragColor = col;
 }
 </script>
 <script src="twgl-full.js"></script>
 <script type="text/javascript">
+    //make SVG manipulatable via SVG.js library
     var svgDoc = SVG.adopt($("#eyebeam")[0]);
 
-    function pathArrayToString(pathArray) {
-        var segmentStrings = pathArray.map(segment => segment[0] + segment.slice(1).join(" "));
-        return segmentStrings.join(" ");
-    }
-
+    //function to re-structure SVG Paths to make them more manipulation-friendly     
     function removeVHFromPath(pathArray) {
         var currentPos = { x: 0, y: 0 };
         var pathSegments = [];
@@ -144,6 +148,13 @@ gl_FragColor = vec4( vec3( color * 0.5, sin( color + time / 2.5 ) * 0.75, color 
         return pathSegments;
     }
 
+    //helper function to re-render paths
+    function pathArrayToString(pathArray) {
+        var segmentStrings = pathArray.map(segment => segment[0] + segment.slice(1).join(" "));
+        return segmentStrings.join(" ");
+    }
+
+    //function that maps a coordinate transform over all of the points in an SVG Path
     function pathCoordinateTransform(pathArray, transform) {
         var pathSegments = [];
         pathArray.forEach(function (seg, i) {
@@ -178,10 +189,12 @@ gl_FragColor = vec4( vec3( color * 0.5, sin( color + time / 2.5 ) * 0.75, color 
         return pathSegments;
     }
 
+    //function that maps a coordinate transform over an SVG Polygon
     function polygonCoordinateTransform(pointArray, transform) {
         return pointArray.map(p => ({ x: p[0], y: p[1] })).map(p => transform(p)).map(p => [p.x, p.y]);
     }
 
+    //wrapper function to execute SVG Path cleanup
     function replaceVH(ind) {
         var newPath = removeVHFromPath(baseArrays[ind]);
         console.log(baseArrays[ind]);
@@ -190,6 +203,7 @@ gl_FragColor = vec4( vec3( color * 0.5, sin( color + time / 2.5 ) * 0.75, color 
         letters[ind].plot(stringPath);
     }
 
+    //a bunch of utility functions for doing coordinate transformations
     function vecsub(v1, v2) {
         var isVec = !(typeof v2 == "number");
         return { x: v1.x - (isVec ? v2.x : v2), y: v1.y - (isVec ? v2.y : v2) }
@@ -219,6 +233,7 @@ gl_FragColor = vec4( vec3( color * 0.5, sin( color + time / 2.5 ) * 0.75, color 
         return warp;
     }
 
+    //making copies of the initial positions/orientations of the SVG letters
     var letters = svgDoc.children()[1].children();
     var baseArrays = letters.map(elem => elem.array());
     var basePositions = letters.map(letter => ({ x: letter.x(), y: letter.y() }));
@@ -227,6 +242,7 @@ gl_FragColor = vec4( vec3( color * 0.5, sin( color + time / 2.5 ) * 0.75, color 
     var matricies = letters.map(elem => elem.matrixify());
     var spin = () => letters.map((p, i) => setTimeout(() => p.animate(500 * 2, "=").rotate(360 * 2), i * 100));
 
+    //creating img and canvas elements used to import the SVG into a WebGL texture
     const svgImg = new Image();
     const svgCanvas = document.createElement("canvas");
     svgCanvas.width = 1920;
@@ -234,6 +250,7 @@ gl_FragColor = vec4( vec3( color * 0.5, sin( color + time / 2.5 ) * 0.75, color 
     svgCanvas.id = "svgCanvas"
     const svgContext = svgCanvas.getContext("2d");
 
+    //rendering the SVG to a canvas element
     function renderSVGtoCanvas() {
         var svg = document.querySelector('svg');
 
@@ -254,14 +271,20 @@ gl_FragColor = vec4( vec3( color * 0.5, sin( color + time / 2.5 ) * 0.75, color 
         svgImg.onload = () => svgContext.drawImage(svgImg, 0, 0);
     }
 
+    //empty p5 setup function
     function setup() {
 
     }
 
+    //playing with SVG colors
     svgDoc.children()[0].fill("black")
     letters.map(letter => letter.fill("white"))
 
+    //p5 draw loop to do the animation. Am only using p5 as a quick way to get a draw loop - this could be 
+    //replaced to just use requestAnimationFrame() later
     function draw() {
+
+        //a bunhc of experimentation with different SVG transformations
         var width = 1920; svgDoc.children()[0].width();
         var height = 1440; svgDoc.children()[0].height();
         var time = Date.now() / 1000.;
@@ -303,16 +326,19 @@ gl_FragColor = vec4( vec3( color * 0.5, sin( color + time / 2.5 ) * 0.75, color 
             letter.plot(mapFunction(baseArrays[i], transformFunc));
             letter.fill({ opacity: sinN(time / 4 + phase) });
         });
+
+
+        //render the updated SVG to a canvas
         renderSVGtoCanvas();
     }
 
+    //can enter/exit fullscreen display with spacebar
     document.addEventListener("keyup", (event) => {
         console.log("key", event);
         if (event.code == "Space") {
             toggleFullScreen();
         }
     });
-
     function toggleFullScreen() {
         if (!document.fullscreenElement) {
             svgDoc.node.requestFullscreen();
@@ -323,7 +349,8 @@ gl_FragColor = vec4( vec3( color * 0.5, sin( color + time / 2.5 ) * 0.75, color 
         }
     }
 
-    const gl = document.querySelector("#glCanvas").getContext("webgl");
+    //setting up 
+    const gl = document.querySelector("#glCanvas").getContext("webgl2");
     const programInfo = twgl.createProgramInfo(gl, ["vs", "fs"]);
 
     const arrays = {
@@ -331,13 +358,18 @@ gl_FragColor = vec4( vec3( color * 0.5, sin( color + time / 2.5 ) * 0.75, color 
     };
     const bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
 
+    const textures = twgl.createTextures(gl, {svgFrame: {src: svgCanvas}})
+
     function render(time) {
         twgl.resizeCanvasToDisplaySize(gl.canvas);
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
+        twgl.setTextureFromElement(gl, textures.svgFrame, svgCanvas);
+
         const uniforms = {
             time: time * 0.001,
             resolution: [gl.canvas.width, gl.canvas.height],
+            svgFrame: textures.svgFrame
         };
 
         gl.useProgram(programInfo.program);
