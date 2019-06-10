@@ -282,8 +282,9 @@ void main () {
     vec3 c;
     vec2 cent = vec2(0.5); 
     
-    vec4 svg = texture(svgFrame, quant(stN, 10.+1000.*sinN(quant(time/4.+stN.x, 10.)*PI))); 
-    vec4 bb = texture(backbuffer, stN);
+    vec2 transN = vec2(mod(stN.x + time/5., 1.), mod(stN.y + sin(time/2.5*PI + stN.x*PI)*0.1, 1.));
+    vec3 svg = texture(svgFrame, mix(stN, transN, 0.0)).rgb; 
+    vec3 bb = texture(backbuffer, stN).rgb;
 
-    fragColor = mix(bb, svg, 0.05);
+    fragColor = vec4((mix(bb, svg, 0.02)+svg)*(1.+sin(time/2.+stN.x*PI)*0.01), 1.);
 }
