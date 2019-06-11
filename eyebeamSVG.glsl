@@ -279,7 +279,7 @@ uniform sampler2D svgFrame;
 out vec4 fragColor;
 void main () {
     vec2 stN = uvN();
-    vec2 sampN= vec2(1.-stN.x, stN.y);
+    vec2 sampN= vec2(stN.x, 1.-stN.y);
     vec3 c;
     vec2 cent = vec2(0.5); 
     
