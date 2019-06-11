@@ -8,6 +8,7 @@
     <script type="text/javascript" src="jquery.js"></script>
     <script type="text/javascript" src="svg.js"></script>
     <script type="text/javascript" src="twgl-full.js"></script>
+    <script type="text/javascript" src="lodash.js"></script>
 </head>
 
 <body>
@@ -266,14 +267,44 @@ fragColor = col;
         return { x: out.x * p5w, y: out.y * p5h };
     }
     var length = v => (v.x ** 2 + v.y ** 2) ** 0.5;
-    var distance = (v1, v2) => ((v1.x - v2.x) ** 2 + (v1.y - v2.y) ** 2) ** 0.5
+    let distance = (v1, v2) => ((v1.x - v2.x) ** 2 + (v1.y - v2.y) ** 2) ** 0.5
     function coordWarp(stN, t2, rad, numBalls) {
-        var warp = { x: stN.x, y: stN.y };
+        let warp = { x: stN.x, y: stN.y };
         for (var i = 0; i < numBalls; i++) {
-            var p = { x: sinN(t2 * randf(i + 1.) * 1.3 + i), y: cosN(t2 * randf(i + 1.) * 1.1 + i) };
+            let p = { x: sinN(t2 * randf(i + 1.) * 1.3 + i), y: cosN(t2 * randf(i + 1.) * 1.1 + i) };
             warp = length(vecsub(stN, p)) <= rad ? mix(warp, p, 1. - length(vecsub(stN, p)) / rad) : warp;
         }
         return warp;
+    }
+
+    function shapeArraySwap(pos1, pos2, shapeArray){
+        let point1 = shapeArray[pos1[0]][pos1[1]].slice(pos1[2], pos1[2]+2);
+        let point2 = shapeArray[pos2[0]][pos2[1]].slice(pos2[2], pos2[2]+2);
+
+        shapeArray[pos1[0]][pos1[1]].splice(pos1[2], 2, point2[0], point2[2]);
+        shapeArray[pos2[0]][pos2[1]].splice(pos2[2], 2, point1[0], point1[2]);   
+    }
+
+    function randomSwaps(baseArrays, numSwaps){
+        let newArrays = _.cloneDeep(baseArrays);
+        let listOfSwaps = [];
+        function getRandomPoint(){
+            let r = Math.random, f = Math.floor;
+            let shape = f(r()*newArrays.length);
+            let seg = f(r()*newArrays[shape].length); 
+            let segLen = newArrays[shape][seg].length;
+            if(segLen == 1) return -1;
+            let pathDev = segLen%2;
+            let pt = pathDev + f(r()*(segLen-pathDev)/2)*2;
+            return [shape, seg, pt];
+        }
+        for(let i = 0; i < numSwaps; i++){
+            let swapPair = [getRandomPoint(), getRandomPoint()];
+            if(swapPair[0] == -1 || swapPair[1] == -1) continue;
+            shapeArraySwap(swapPair[0], swapPair[1], newArrays);
+            listOfSwaps.push(swapPair);
+        }
+        return {shapeArray: newArrays, swaps: listOfSwaps};
     }
 
     //making copies of the initial positions/orientations of the SVG letters
