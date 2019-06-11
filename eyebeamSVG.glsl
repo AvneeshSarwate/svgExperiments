@@ -287,7 +287,8 @@ void main () {
     vec3 svg = texture(svgFrame, mix(sampN, transN, 0.0)).rgb; 
     vec3 bb = texture(backbuffer, stN).rgb;
 
-    vec3 col = (mix(bb, svg, 0.02)+svg)*(1.+sin(time/2.+stN.x*PI)*0.01);
+    vec3 col = (mix(bb, svg, 0.2)+svg)*(1.+sin(time/2.+stN.x*PI)*0.01);
+    col = mix(bb, svg, 0.05);
 
     fragColor = vec4(col, 1.);
 }

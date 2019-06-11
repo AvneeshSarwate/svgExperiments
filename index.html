@@ -227,6 +227,16 @@ fragColor = col;
 
     }
 
+    function boxMix(box1, box2, a){
+        var mx = (a, b, m) => a*(1-m) + b*m;
+        return {
+            x: mx(box1.x, box2.x, a),
+            y: mx(box1.y, box2.y, a),
+            width: mx(box1.width, box2.width, a),
+            height: mx(box1.height, box2.height, a),
+        }
+    }
+
     //wrapper function to execute SVG Path cleanup
     function replaceVH(ind) {
         var newPath = removeVHFromPath(baseArrays[ind]);
@@ -345,18 +355,19 @@ fragColor = col;
 
         letters.forEach(function (letter, i) {
             var m = matricies[i];
-            var phase = i / letters.length * PI * (1 + 10 * sinN(time / 3.3));
+            var phase = i / letters.length * PI*2;// * (1 + 10 * sinN(time / 3.3));
 
             var mapFunction = letter.type == "path" ? pathCoordinateTransform : polygonCoordinateTransform;
             var shapeArray = mapFunction(baseArrays[i], transformFunc);
             // letter.plot();
-            // letter.fill({ opacity: sinN(time / 4 + phase) });
+            letter.fill({ opacity: sinN(time / 4 + phase) });
 
+            var frameBox = {x: 0, y: 0, width: width, height: height};
             var bbox = getBoundingBox(baseArrays[i]);
             var xy2 = transformFunc(bbox);
-            // bbox.x = xy2.x;
-            // bbox.y = xy2.y;
-            letter.plot(putLetterInBox(shapeArray, bbox));
+            bbox.x = xy2.x;
+            bbox.y = xy2.y;
+            letter.plot(putLetterInBox(shapeArray, boxMix(bbox, frameBox, sinN(time+phase)**10)));
         });
 
 
