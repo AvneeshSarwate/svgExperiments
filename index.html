@@ -12,7 +12,7 @@
 
 <body>
     <svg id="eyebeam" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-        x="0px" y="0px" viewbox="0 0 1920 1440" style="enable-background:new 0 0 1920 1440; display: none;" xml:space="preserve">
+        x="0px" y="0px" viewbox="0 0 1920 1440" style="enable-background:new 0 0 1920 1440;" xml:space="preserve">
         <rect width="100%" height="100%"></rect>
         <g xmlns="http://www.w3.org/2000/svg">
             <polygon
@@ -215,7 +215,7 @@ fragColor = col;
             }
         });
 
-        return {x: box.minX, y: box.maxX, width: box.maxX-box.minX, height: box.maxY-box.minY};
+        return {x: box.minX, y: box.minY, width: box.maxX-box.minX, height: box.maxY-box.minY};
     }
 
     function putLetterInBox(shapeArray, newBox){
@@ -223,7 +223,8 @@ fragColor = col;
         var isPath = shapeArray[0].length % 2 === 1;
         var transFunc = xy => ({x: (xy.x-ob.x)*(newBox.width/ob.width)+newBox.x, y: (xy.y-ob.y)*(newBox.height/ob.height)+newBox.y});
         var mapFunction = isPath ? pathCoordinateTransform : polygonCoordinateTransform;
-        mapFunction(shapeArray, transFunc);
+        return mapFunction(shapeArray, transFunc);
+
     }
 
     //wrapper function to execute SVG Path cleanup
@@ -355,7 +356,7 @@ fragColor = col;
             // letter.color()
 
             var mapFunction = letter.type == "path" ? pathCoordinateTransform : polygonCoordinateTransform;
-            letter.plot(mapFunction(baseArrays[i], transformFunc));
+            // letter.plot(mapFunction(baseArrays[i], transformFunc));
             // letter.fill({ opacity: sinN(time / 4 + phase) });
         });
 
