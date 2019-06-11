@@ -279,12 +279,15 @@ uniform sampler2D svgFrame;
 out vec4 fragColor;
 void main () {
     vec2 stN = uvN();
+    vec2 sampN= vec2(1.-stN.x, stN.y);
     vec3 c;
     vec2 cent = vec2(0.5); 
     
-    vec2 transN = vec2(mod(stN.x + time/5., 1.), mod(stN.y + sin(time/2.5*PI + stN.x*PI)*0.1, 1.));
-    vec3 svg = texture(svgFrame, mix(stN, transN, 0.0)).rgb; 
+    vec2 transN = vec2(mod(sampN.x + time/5., 1.), mod(sampN.y + sin(time/2.5*PI + sampN.x*PI)*0.1, 1.));
+    vec3 svg = texture(svgFrame, mix(sampN, transN, 0.0)).rgb; 
     vec3 bb = texture(backbuffer, stN).rgb;
 
-    fragColor = vec4((mix(bb, svg, 0.02)+svg)*(1.+sin(time/2.+stN.x*PI)*0.01), 1.);
+    vec3 col = (mix(bb, svg, 0.02)+svg)*(1.+sin(time/2.+stN.x*PI)*0.01);
+
+    fragColor = vec4(col, 1.);
 }
