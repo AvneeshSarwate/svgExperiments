@@ -193,6 +193,39 @@ fragColor = col;
         return pointArray.map(p => ({ x: p[0], y: p[1] })).map(p => transform(p)).map(p => [p.x, p.y]);
     }
 
+    function getBoundingBox(shapeArray){
+        let box = {
+            minX: Infinity, 
+            maxX: -Infinity, 
+            minY: Infinity, 
+            maxY: -Infinity
+        };
+        function updateBox(point, box){
+            if(point[0] < box.minX) box.minX = point[0];
+            if(point[0] > box.maxX) box.maxX = point[0];
+            if(point[1] < box.minY) box.minY = point[1];
+            if(point[1] > box.maxY) box.maxY = point[1];
+        }
+        shapeArray.forEach(section => {
+            if(section.length == 2) updateBox(section, box)
+            else {
+                for(let i=1; i < section.length; i+=2){
+                    updateBox(section.slice(i, i+2), box);
+                }
+            }
+        });
+
+        return {x: box.minX, y: box.maxX, width: box.maxX-box.minX, height: box.maxY-box.minY};
+    }
+
+    function putLetterInBox(shapeArray, newBox){
+        var ob = getBoundingBox(shapeArray); //originalBox
+        var isPath = shapeArray[0].length % 2 === 1;
+        var transFunc = xy => ({x: (xy.x-ob.x)*(newBox.width/ob.width)+newBox.x, y: (xy.y-ob.y)*(newBox.height/ob.height)+newBox.y});
+        var mapFunction = isPath ? pathCoordinateTransform : polygonCoordinateTransform;
+        mapFunction(shapeArray, transFunc);
+    }
+
     //wrapper function to execute SVG Path cleanup
     function replaceVH(ind) {
         var newPath = removeVHFromPath(baseArrays[ind]);
