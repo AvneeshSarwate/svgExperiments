@@ -599,6 +599,6 @@ void main () {
     vec3 col = (mix(bb, svg, 0.2)+svg)*(1.+sin(time/2.+stN.x*PI)*0.01);
     col = mix(bb, svg, 0.09);
     col = mix(col, svg, float(isInBox));
-
+    col = mix(col, red, float(distance(cent, stN) < 0.1));
     fragColor = vec4(col, 1.);
 }
