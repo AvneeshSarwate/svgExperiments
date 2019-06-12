@@ -289,11 +289,11 @@ void main () {
     float w = 1920.;
     bool inBox = lw/w < stN.x && stN.x < (w-lw)/w && lw/h < stN.y && stN.y < (h-lw)/h; 
     vec3 svg = texture(svgFrame, mix(sampN, transN, 0.0)).rgb; 
-    vec3 bb = texture(backbuffer, stN).rgb;
+    vec3 bb = texture(backbuffer, rotate(stN, cent, 0.005)).rgb;
 
     vec3 col = (mix(bb, svg, 0.2)+svg)*(1.+sin(time/2.+stN.x*PI)*0.01);
     col = mix(bb, svg, 0.05);
-    col = mix(col, red, float(inBox));
+    col = mix(col, svg, float(inBox));
 
     fragColor = vec4(col, 1.);
 }

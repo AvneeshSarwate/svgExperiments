@@ -9,6 +9,7 @@
     <script type="text/javascript" src="svg.js"></script>
     <script type="text/javascript" src="twgl-full.js"></script>
     <script type="text/javascript" src="lodash.js"></script>
+    <script type="text/javascript" src="boids.js"></script>
 </head>
 
 <body>
@@ -347,9 +348,21 @@ fragColor = col;
         svgImg.onload = () => svgContext.drawImage(svgImg, 0, 0);
     }
 
+
+
+    var flock;
+    var width = 1920, height = 1440;
+
     //empty p5 setup function
     function setup() {
-
+        var width = 1920, height = 1440;
+        flock = new Flock();
+        var svgCreator = r => svgDoc.circle(r).center(width/2, height/2).fill("red");
+        // Add an initial set of boids into the system
+        for (let i = 0; i < 100; i++) {
+            let b = new Boid(width/2, height/2, svgCreator, width, height, 220, 50);
+            flock.addBoid(b);
+        }
     }
 
     //playing with SVG colors
@@ -364,10 +377,8 @@ fragColor = col;
     //replaced to just use requestAnimationFrame() later
     frameCount = 0;
     function draw() {
-
-        //a bunhc of experimentation with different SVG transformations
-        var width = 1920; svgDoc.children()[0].width();
-        var height = 1440; svgDoc.children()[0].height();
+        flock.run();
+        var width = 1920, height = 1440;
 
         var refTime = Date.now()/1000;
         var increment = Date.now()/1000 - time;
