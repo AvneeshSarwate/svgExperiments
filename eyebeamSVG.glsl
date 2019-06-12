@@ -566,6 +566,8 @@ float minDistToBorder(vec2 stN){
 
 
 uniform sampler2D svgFrame;
+int numCircles = 10;
+uniform vec2 circlePositions[10];
 
 out vec4 fragColor;
 
@@ -599,6 +601,12 @@ void main () {
     vec3 col = (mix(bb, svg, 0.2)+svg)*(1.+sin(time/2.+stN.x*PI)*0.01);
     col = mix(bb, svg, 0.09);
     col = mix(col, svg, float(isInBox));
-    col = mix(col, red, float(distance(cent, stN) < 0.1));
+    // col = mix(col, red, float(distance(resolution/2., gl_FragCoord.xy) < 100.*resolution.x/w));
+
+    for(int i = 0; i < numCircles; i++){
+        float isInCircle = float(distance(circlePositions[i]*resolution/vec2(w, h), gl_FragCoord.xy) < 100.*resolution.x/w);
+        col = mix(col, hash(vec3(5.3, 45., float(i))), isInCircle);
+    }
+
     fragColor = vec4(col, 1.);
 }

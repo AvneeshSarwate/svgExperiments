@@ -53,7 +53,8 @@ function render(time) {
         time: time * 0.001,
         resolution: [gl.canvas.width, gl.canvas.height],
         svgFrame: textures.svgFrame,
-        backbuffer: frameBuffers[frameBufferIndex].attachments[0]
+        backbuffer: frameBuffers[frameBufferIndex].attachments[0],
+        circlePositions: flock.boids.map(b => [b.position.x, b.position.y]).flat()
     };
 
     gl.useProgram(programInfo.program);

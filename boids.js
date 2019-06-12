@@ -43,7 +43,7 @@ Boid.prototype.run = function (boids) {
     this.flock(boids);
     this.update();
     this.borders();
-    this.render();
+    // this.render();
 }
 
 Boid.prototype.applyForce = function (force) {
