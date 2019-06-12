@@ -277,12 +277,12 @@ fragColor = col;
         return warp;
     }
 
-    function shapeArraySwap(pos1, pos2, shapeArray){
-        let point1 = shapeArray[pos1[0]][pos1[1]].slice(pos1[2], pos1[2]+2);
-        let point2 = shapeArray[pos2[0]][pos2[1]].slice(pos2[2], pos2[2]+2);
+    function shapeArraySwap(pos1, pos2, shapeArrays){
+        let point1 = shapeArrays[pos1[0]][pos1[1]].slice(pos1[2], pos1[2]+2);
+        let point2 = shapeArrays[pos2[0]][pos2[1]].slice(pos2[2], pos2[2]+2);
 
-        shapeArray[pos1[0]][pos1[1]].splice(pos1[2], 2, point2[0], point2[2]);
-        shapeArray[pos2[0]][pos2[1]].splice(pos2[2], 2, point1[0], point1[2]);   
+        shapeArrays[pos1[0]][pos1[1]].splice(pos1[2], 2, point2[0], point2[1]);
+        shapeArrays[pos2[0]][pos2[1]].splice(pos2[2], 2, point1[0], point1[1]);   
     }
 
     function randomSwaps(baseArrays, numSwaps){
@@ -304,7 +304,7 @@ fragColor = col;
             shapeArraySwap(swapPair[0], swapPair[1], newArrays);
             listOfSwaps.push(swapPair);
         }
-        return {shapeArray: newArrays, swaps: listOfSwaps};
+        return {shapeArrays: newArrays, swaps: listOfSwaps, getRandomPoint: getRandomPoint};
     }
 
     //making copies of the initial positions/orientations of the SVG letters
@@ -315,6 +315,8 @@ fragColor = col;
     baseArrays = letters.map(elem => elem.array());
     var matricies = letters.map(elem => elem.matrixify());
     var spin = () => letters.map((p, i) => setTimeout(() => p.animate(500 * 2, "=").rotate(360 * 2), i * 100));
+
+    var swapInfo = randomSwaps(baseArrays, 100);
 
     //creating img and canvas elements used to import the SVG into a WebGL texture
     const svgImg = new Image();
@@ -360,6 +362,7 @@ fragColor = col;
 
     //p5 draw loop to do the animation. Am only using p5 as a quick way to get a draw loop - this could be 
     //replaced to just use requestAnimationFrame() later
+    frameCount = 0;
     function draw() {
 
         //a bunhc of experimentation with different SVG transformations
@@ -384,23 +387,34 @@ fragColor = col;
         //                         y: xy.y*.7 + cosN(t2+xy.y/height*PI*foldRes)*0.3*height*sinN(time/1.4)});
         // transformFunc = a => ({x:a.x * sinN(time), y: a.y * sinN(time)});
 
+        if(frameCount%3 == 0 && swapInfo.swaps.length > 0){
+            var swapPoints = swapInfo.swaps.pop();
+            shapeArraySwap(swapPoints[0], swapPoints[1], swapInfo.shapeArrays);
+        }
+
         letters.forEach(function (letter, i) {
             var m = matricies[i];
             var phase = i / letters.length * PI*2;// * (1 + 10 * sinN(time / 3.3));
 
-            var mapFunction = letter.type == "path" ? pathCoordinateTransform : polygonCoordinateTransform;
-            var shapeArray = mapFunction(baseArrays[i], transformFunc);
-            // letter.plot();
-            letter.fill({ opacity: sinN(time / 4 + phase) });
+            // var mapFunction = letter.type == "path" ? pathCoordinateTransform : polygonCoordinateTransform;
+            // var shapeArray = mapFunction(baseArrays[i], transformFunc);
+            // // letter.plot(shapeArray);
 
-            var frameBox = {x: 0, y: 0, width: width, height: height};
-            var bbox = getBoundingBox(baseArrays[i]);
-            var xy2 = transformFunc(bbox);
-            bbox.x = xy2.x;
-            bbox.y = xy2.y;
-            letter.plot(putLetterInBox(shapeArray, boxMix(bbox, frameBox, sinN(time+phase)**10)));
+            // var frameBox = {x: 0, y: 0, width: width, height: height};
+            // var bbox = getBoundingBox(baseArrays[i]);
+            // var xy2 = transformFunc(bbox);
+            // bbox.x = xy2.x;
+            // bbox.y = xy2.y;
+            // letter.plot(putLetterInBox(shapeArray, boxMix(bbox, frameBox, sinN(time+phase)**10)));
+
+            if(frameCount%3 == 0 && swapInfo.swaps.length >= 0){
+                letter.plot(swapInfo.shapeArrays[i]);
+            }
+            letter.fill({ opacity: sinN(time*4 + phase) });
+            
         });
 
+        frameCount++
 
         //render the updated SVG to a canvas
         renderSVGtoCanvas();

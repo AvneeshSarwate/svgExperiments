@@ -290,5 +290,5 @@ void main () {
     vec3 col = (mix(bb, svg, 0.2)+svg)*(1.+sin(time/2.+stN.x*PI)*0.01);
     col = mix(bb, svg, 0.05);
 
-    fragColor = vec4(col, 1.);
+    fragColor = vec4(svg, 1.);
 }
