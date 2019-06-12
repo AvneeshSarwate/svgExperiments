@@ -357,10 +357,10 @@ fragColor = col;
     function setup() {
         var width = 1920, height = 1440;
         flock = new Flock();
-        var svgCreator = r => svgDoc.circle(r).center(width/2, height/2).fill("red");
         // Add an initial set of boids into the system
-        for (let i = 0; i < 100; i++) {
-            let b = new Boid(width/2, height/2, svgCreator, width, height, 220, 50);
+        for (let i = 0; i < 10; i++) {
+            var svgCreator = r => svgDoc.circle(r).center(width/2, height/2).fill("rgb("+i*5+",50,50)");
+            let b = new Boid(width/2, height/2, svgCreator, width, height, 220, 200);
             flock.addBoid(b);
         }
     }
@@ -377,7 +377,6 @@ fragColor = col;
     //replaced to just use requestAnimationFrame() later
     frameCount = 0;
     function draw() {
-        flock.run();
         var width = 1920, height = 1440;
 
         var refTime = Date.now()/1000;
@@ -429,6 +428,7 @@ fragColor = col;
 
         //render the updated SVG to a canvas
         renderSVGtoCanvas();
+        flock.run();
     }
 
     const glCanvas = document.querySelector("#glCanvas");

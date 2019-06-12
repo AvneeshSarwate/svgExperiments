@@ -32,7 +32,7 @@ function Boid(x, y, svgCreator, width, height, letterSize, circleSize) {
     this.acceleration = createVector(0, 0);
     this.velocity = createVector(random(-1, 1), random(-1, 1));
     this.position = createVector(x, y);
-    this.r = letterSize + circleSize;
+    this.r = letterSize+circleSize/2;
     this.maxspeed = 3 * 2;    // Maximum speed
     this.maxforce = 0.05; // Maximum steering force
     this.width = width;
@@ -57,8 +57,8 @@ Boid.prototype.flock = function (boids) {
     let ali = this.align(boids);      // Alignment
     let coh = this.cohesion(boids);   // Cohesion
     // Arbitrarily weight these forces
-    sep.mult(4.5);
-    ali.mult(1.0);
+    sep.mult(40.5);
+    ali.mult(10.0);
     coh.mult(1.0);
     // Add the force vectors to acceleration
     this.applyForce(sep);
@@ -96,12 +96,10 @@ Boid.prototype.render = function () {
     this.svgElement.center(this.position.x, this.position.y);
 }
 
-// Wraparound
+// Bounce
 Boid.prototype.borders = function () {
-    if (this.position.x < this.r) this.position.x = this.width - this.r;
-    if (this.position.y < this.r) this.position.y = this.height - this.r;
-    if (this.position.x > this.width - this.r) this.position.x = this.r;
-    if (this.position.y > this.height - this.r) this.position.y = this.r;
+    if (this.position.x < this.r || this.position.x > this.width - this.r) this.velocity.x = -this.velocity.x;
+    if (this.position.y < this.r || this.position.y > this.height - this.r) this.velocity.y= -this.velocity.y;
 }
 
 // Separation
