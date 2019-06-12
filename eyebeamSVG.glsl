@@ -603,10 +603,12 @@ void main () {
     col = mix(col, svg, float(isInBox));
     // col = mix(col, red, float(distance(resolution/2., gl_FragCoord.xy) < 100.*resolution.x/w));
 
-    for(int i = 0; i < numCircles; i++){
-        float isInCircle = float(distance(circlePositions[i]*resolution/vec2(w, h), gl_FragCoord.xy) < 100.*resolution.x/w);
-        col = mix(col, hash(vec3(5.3, 45., float(i))), isInCircle);
-    }
-
+    int ci = min(int((svg.r*255.)-1.), 9);
+    // for(int i = 0; i < numCircles; i++){
+        vec2 flipFragCoord = vec2(gl_FragCoord.x, resolution.y-gl_FragCoord.y);
+        bool isInCircle = distance(circlePositions[ci]*resolution/vec2(w, h), flipFragCoord) < 100.*resolution.x/w;
+        bool isNotBackground = svg.r != 0.;
+        col = mix(col, hash(vec3(5.3, 45., float(ci))), float(isInCircle && isInBox && isNotBackground));
+    // }
     fragColor = vec4(col, 1.);
 }
