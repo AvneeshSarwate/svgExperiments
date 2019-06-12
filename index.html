@@ -387,30 +387,30 @@ fragColor = col;
         //                         y: xy.y*.7 + cosN(t2+xy.y/height*PI*foldRes)*0.3*height*sinN(time/1.4)});
         // transformFunc = a => ({x:a.x * sinN(time), y: a.y * sinN(time)});
 
-        if(frameCount%3 == 0 && swapInfo.swaps.length > 0){
-            var swapPoints = swapInfo.swaps.pop();
-            shapeArraySwap(swapPoints[0], swapPoints[1], swapInfo.shapeArrays);
-        }
+        // if(frameCount%3 == 0 && swapInfo.swaps.length > 0){
+        //     var swapPoints = swapInfo.swaps.pop();
+        //     shapeArraySwap(swapPoints[0], swapPoints[1], swapInfo.shapeArrays);
+        // }
 
         letters.forEach(function (letter, i) {
             var m = matricies[i];
             var phase = i / letters.length * PI*2;// * (1 + 10 * sinN(time / 3.3));
 
-            // var mapFunction = letter.type == "path" ? pathCoordinateTransform : polygonCoordinateTransform;
-            // var shapeArray = mapFunction(baseArrays[i], transformFunc);
-            // // letter.plot(shapeArray);
+            var mapFunction = letter.type == "path" ? pathCoordinateTransform : polygonCoordinateTransform;
+            var shapeArray = mapFunction(baseArrays[i], transformFunc);
+            // letter.plot(shapeArray);
 
-            // var frameBox = {x: 0, y: 0, width: width, height: height};
-            // var bbox = getBoundingBox(baseArrays[i]);
-            // var xy2 = transformFunc(bbox);
+            var frameBox = {x: 0, y: 0, width: width, height: height};
+            var bbox = getBoundingBox(baseArrays[i]);
+            var xy2 = transformFunc(bbox);
             // bbox.x = xy2.x;
             // bbox.y = xy2.y;
-            // letter.plot(putLetterInBox(shapeArray, boxMix(bbox, frameBox, sinN(time+phase)**10)));
+            letter.plot(putLetterInBox(shapeArray, bbox));
 
-            if(frameCount%3 == 0 && swapInfo.swaps.length >= 0){
-                letter.plot(swapInfo.shapeArrays[i]);
-            }
-            letter.fill({ opacity: sinN(time*4 + phase) });
+            // if(frameCount%3 == 0 && swapInfo.swaps.length >= 0){
+            //     letter.plot(swapInfo.shapeArrays[i]);
+            // }
+            // letter.fill({ opacity: sinN(time*4 + phase) });
             
         });
 

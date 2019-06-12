@@ -284,11 +284,16 @@ void main () {
     vec2 cent = vec2(0.5); 
     
     vec2 transN = vec2(mod(sampN.x + time/5., 1.), mod(sampN.y + sin(time/2.5*PI + sampN.x*PI)*0.1, 1.));
+    float lw = 220.; //letter width
+    float h = 1440.;
+    float w = 1920.;
+    bool inBox = lw/w < stN.x && stN.x < (w-lw)/w && lw/h < stN.y && stN.y < (h-lw)/h; 
     vec3 svg = texture(svgFrame, mix(sampN, transN, 0.0)).rgb; 
     vec3 bb = texture(backbuffer, stN).rgb;
 
     vec3 col = (mix(bb, svg, 0.2)+svg)*(1.+sin(time/2.+stN.x*PI)*0.01);
     col = mix(bb, svg, 0.05);
+    col = mix(col, red, float(inBox));
 
-    fragColor = vec4(svg, 1.);
+    fragColor = vec4(col, 1.);
 }
