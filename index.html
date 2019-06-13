@@ -157,7 +157,7 @@ fragColor = col;
         flock = new Flock();
         // Add an initial set of boids into the system
         for (let i = 0; i < 10; i++) {
-            var svgCreator = r => svgDoc.circle(r).center(width/2, height/2).fill("rgb("+(i+1)+",0,255)");
+            var svgCreator = r => svgDoc.circle(r).center(width/2, height/2).fill("rgb("+((i+1)*10+4)+",0,255)");
             // svgCreator = () => null;
             let b = new Boid(width/2, height/2, svgCreator, width, height, 220, 200);
             flock.addBoid(b);
