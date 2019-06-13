@@ -587,10 +587,34 @@ bool inBox(vec2 nn, float x1, float x2, float y1, float y2){
     return x1 < nn.x && nn.x < x2 && y1 < nn.y && nn.y < y2; 
 }
 
+
+vec3 traffic(vec2 stN, vec3 params){
+    float t2 = params.x* PI; 
+    float t3 = time/5.;
+    float t4 = time;
+    float rad = params.y;
+    vec2 warp1 = vec2(-1., 1.);
+    vec2 warp2 = vec2(0.5, 0.);
+    vec2 warpXY = mix(warp1, warp2, params.z);
+    stN = mix(stN, rotate(stN, vec2(0.5) + sin(t4)*rad, t3), sinN(stN.x*PI*(1.+sinN(t2/2.)*5.) + t2*3.) * warpXY.x*2.);
+    stN = mix(stN, rotate(stN, vec2(0.5) + cos(t4)*rad, t3), sinN(stN.y*PI*(1.+sinN(t2/2.)*5.) + t2*3.) * warpXY.y *2.);
+    // stN = mix(stN, rotate(stN, vec2(0.5), t2), sinN((distance(stN, vec2(0.5))+0.01)*PI*(1.+sinN(t2/2.)*5.) + t2*3.) * sin(time)*2.);
+    // t2 = time;
+    // stN = mix(stN, rotate(stN, vec2(0.5), t2), sinN(stN.x*PI*(1.+sinN(t2/2.)*5.) + t2*3.));
+    // stN = rotate(stN, vec2(0.5), abs(stN.x-0.5) * abs(stN.y-0.5));
+
+    
+    //take2
+    float timeVal = time+3000.;
+    stN = quant(stN, 200.);
+    vec2 stN2 = rotate(stN, vec2(0.5), time/2.);
+    vec3 c = inStripeX2(stN, timeVal/10. * (.5 + stN.x)) * inStripeY2(stN, timeVal/7. * (.5 + stN.y));
+    return c;
+}
+
 void main () {
     vec2 stN = uvN();
     vec2 sampN= vec2(stN.x, 1.-stN.y);
-    vec3 c;
     vec2 cent = vec2(0.5); 
     
     vec2 transN = vec2(mod(sampN.x + time/5., 1.), mod(sampN.y + sin(time/2.5*PI + sampN.x*PI)*0.1, 1.));
@@ -609,7 +633,7 @@ void main () {
     vec2 flipCirlce = vec2(circlePositions[ci].x, h-circlePositions[ci].y);
     bool isInCircle = distance(flipCirlce*resolution/vec2(w, h), gl_FragCoord.xy) < circleRadii[ci]*max(resolution.x/w, resolution.y/h)*1.1;
     bool isNotBackground = svg.b != 0.;
-    col = mix(col, hash(vec3(5.3, 45., float(ci))), float(isInCircle && isInBox && isNotBackground));
+    col = mix(col, traffic(stN, hash(vec3(5.3, 45., float(ci)))), float(isInCircle && isInBox && isNotBackground));
 
     // for(int i = 0; i < numCircles; i++){
     //     bool isInCircle = distance(circlePositions[i]*resolution/vec2(w, h), gl_FragCoord.xy) < 100.*resolution.x/w;
