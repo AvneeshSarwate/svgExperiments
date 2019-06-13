@@ -54,7 +54,8 @@ function render(time) {
         resolution: [gl.canvas.width, gl.canvas.height],
         svgFrame: textures.svgFrame,
         backbuffer: frameBuffers[frameBufferIndex].attachments[0],
-        circlePositions: flock.boids.map(b => [b.position.x, b.position.y]).flat()
+        circlePositions: flock.boids.map(b => [b.position.x, b.position.y]).flat(),
+        circleRadii: flock.boids.map(b => b.svgElement.ry())
     };
 
     gl.useProgram(programInfo.program);

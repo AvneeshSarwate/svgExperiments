@@ -568,6 +568,7 @@ float minDistToBorder(vec2 stN){
 uniform sampler2D svgFrame;
 int numCircles = 10;
 uniform vec2 circlePositions[10];
+uniform float circleRadii[10];
 
 out vec4 fragColor;
 
@@ -606,14 +607,14 @@ void main () {
     int ci = max(min(int(floor((svg.r*255./10.))-1.), 9), 0);
     vec2 flipFragCoord = vec2(gl_FragCoord.x, resolution.y-gl_FragCoord.y);
     vec2 flipCirlce = vec2(circlePositions[ci].x, h-circlePositions[ci].y);
-    bool isInCircle = distance(flipCirlce*resolution/vec2(w, h), gl_FragCoord.xy) < 100.*resolution.x/w;
+    bool isInCircle = distance(flipCirlce*resolution/vec2(w, h), gl_FragCoord.xy) < circleRadii[ci]*max(resolution.x/w, resolution.y/h)*1.1;
     bool isNotBackground = svg.b != 0.;
     col = mix(col, hash(vec3(5.3, 45., float(ci))), float(isInCircle && isInBox && isNotBackground));
 
-    for(int i = 0; i < numCircles; i++){
-        bool isInCircle = distance(circlePositions[i]*resolution/vec2(w, h), gl_FragCoord.xy) < 100.*resolution.x/w;
-        col = mix(col, hash(vec3(5.3, 45., float(i))), float(isInCircle));
-    }
+    // for(int i = 0; i < numCircles; i++){
+    //     bool isInCircle = distance(circlePositions[i]*resolution/vec2(w, h), gl_FragCoord.xy) < 100.*resolution.x/w;
+    //     col = mix(col, hash(vec3(5.3, 45., float(i))), float(isInCircle));
+    // }
 
     vec3 debugCol = vec3(float(ci == 9));
 

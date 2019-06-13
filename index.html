@@ -159,7 +159,7 @@ fragColor = col;
         for (let i = 0; i < 10; i++) {
             var svgCreator = r => svgDoc.circle(r).center(width/2, height/2).fill("rgb("+((i+1)*10+4)+",0,255)");
             // svgCreator = () => null;
-            let b = new Boid(width/2, height/2, svgCreator, width, height, 220, 200);
+            let b = new Boid(width/2, height/2, svgCreator, width, height, 220, 400);
             flock.addBoid(b);
         }
     }
