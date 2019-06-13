@@ -603,17 +603,19 @@ void main () {
     col = mix(col, svg, float(isInBox));
     // col = mix(col, red, float(distance(resolution/2., gl_FragCoord.xy) < 100.*resolution.x/w));
 
-    // int ci = max(min(int((svg.r*255.)-1.), 9), 0);
-    // vec2 flipFragCoord = vec2(gl_FragCoord.x, resolution.y-gl_FragCoord.y);
-    // vec2 flipCirlce = vec2(circlePositions[ci].x, h-circlePositions[ci].y);
-    // bool isInCircle = distance(flipCirlce*resolution/vec2(w, h), gl_FragCoord.xy) < 100.*resolution.x/w;
-    // bool isNotBackground = svg.b != 0.;
-    // col = mix(col, hash(vec3(5.3, 45., float(ci))), float(isInCircle && isInBox && isNotBackground));
+    int ci = max(min(int((svg.r*255.)-1.), 9), 0);
+    vec2 flipFragCoord = vec2(gl_FragCoord.x, resolution.y-gl_FragCoord.y);
+    vec2 flipCirlce = vec2(circlePositions[ci].x, h-circlePositions[ci].y);
+    bool isInCircle = distance(flipCirlce*resolution/vec2(w, h), gl_FragCoord.xy) < 100.*resolution.x/w;
+    bool isNotBackground = svg.b != 0.;
+    col = mix(col, hash(vec3(5.3, 45., float(ci))), float(isInCircle && isInBox && isNotBackground));
 
     for(int i = 0; i < numCircles; i++){
         bool isInCircle = distance(circlePositions[i]*resolution/vec2(w, h), gl_FragCoord.xy) < 100.*resolution.x/w;
         col = mix(col, hash(vec3(5.3, 45., float(i))), float(isInCircle));
     }
 
-    fragColor = vec4(col, 1.);
+    vec3 debugCol = vec3(float(ci == 7));
+
+    fragColor = vec4(col, 1);
 }
