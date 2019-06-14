@@ -500,27 +500,27 @@ vec3 inStripeY(vec2 stN, float t){
 }
 
 vec3 inStripeX2(vec2 stN, float rw){
-    bool inStripe = false;
+    float inStripe = 0.;
     vec2 stN0 = stN;
     for(float i = 0.; i < 40.; i++){
         float seed = 1./i;
         stN = rotate(stN0, vec2(0.5), 0.2 * sin(rw+ i*50.));
         float loc = mod(hash(vec3(seed)).x + sinN(rw*seed*5. + seed) * i/5., 1.);
-        if(abs(loc - stN.x) < rand(seed)*0.005 + 0.001) inStripe = inStripe || true;
+        inStripe += float(abs(loc - stN.x) < rand(seed)*0.005 + 0.001);
     }
-    return inStripe ? black : white;
+    return mix(black, white, 1.-sign(inStripe));
 }
 
 vec3 inStripeY2(vec2 stN, float t){
-    bool inStripe = false;
+    float inStripe = 0.;
     vec2 stN0 = stN;
     for(float i = 0.; i < 40.; i++){
         float seed = 1./i;
         stN = rotate(stN0, vec2(0.5), 0.2 * sin(t+ i*50.));
         float loc = mod(hash(vec3(seed)).x + sinN(t*seed*5. + seed) * i/5., 1.);
-        if(abs(loc - stN.y) < rand(seed)*0.005  + 0.001) inStripe = inStripe || true;
+        inStripe += float(abs(loc - stN.y) < rand(seed)*0.005  + 0.001);
     }
-    return inStripe ? black : white;
+    return mix(black, white, 1.-sign(inStripe));
 }
 
 vec2 xLens(vec2 stN, float rw){
@@ -574,7 +574,7 @@ out vec4 fragColor;
 
 //hardcoded for now, could be made uniforms
 float lw = 220.; //letter width
-float h = 1440.;
+float h = 1080.;
 float w = 1920.;
 
 vec2 resposition(vec2 nn, float x, float y, float size){
@@ -624,23 +624,25 @@ void main () {
     vec3 bb = texture(backbuffer, rotate(stN, cent, 0.005)).rgb;
 
     vec3 col = (mix(bb, svg, 0.2)+svg)*(1.+sin(time/2.+stN.x*PI)*0.01);
-    col = mix(bb, svg, 0.09);
-    col = mix(col, svg, float(isInBox));
-    // col = mix(col, red, float(distance(resolution/2., gl_FragCoord.xy) < 100.*resolution.x/w));
+    // col = mix(bb, svg, 0.09);
+    // col = mix(col, svg, float(isInBox));
+    // // col = mix(col, red, float(distance(resolution/2., gl_FragCoord.xy) < 100.*resolution.x/w));
 
-    int ci = max(min(int(floor((svg.r*255./10.))-1.), 9), 0);
-    vec2 flipFragCoord = vec2(gl_FragCoord.x, resolution.y-gl_FragCoord.y);
-    vec2 flipCirlce = vec2(circlePositions[ci].x, h-circlePositions[ci].y);
-    bool isInCircle = distance(flipCirlce*resolution/vec2(w, h), gl_FragCoord.xy) < circleRadii[ci]*max(resolution.x/w, resolution.y/h)*1.1;
-    bool isNotBackground = svg.b != 0.;
-    col = mix(col, traffic(stN, hash(vec3(5.3, 45., float(ci)))), float(isInCircle && isInBox && isNotBackground));
+    // int ci = max(min(int(floor((svg.r*255./10.))-1.), 9), 0);
+    // vec2 flipFragCoord = vec2(gl_FragCoord.x, resolution.y-gl_FragCoord.y);
+    // vec2 flipCirlce = vec2(circlePositions[ci].x, h-circlePositions[ci].y);
+    // bool isInCircle = distance(flipCirlce*resolution/vec2(w, h), gl_FragCoord.xy) < circleRadii[ci]*max(resolution.x/w, resolution.y/h)*1.1;
+    // bool isNotBackground = svg.b != 0.;
+    // col = mix(col, traffic(stN, hash(vec3(5.3, 45., float(ci)))), float(isInCircle && isInBox && isNotBackground));
 
-    // for(int i = 0; i < numCircles; i++){
-    //     bool isInCircle = distance(circlePositions[i]*resolution/vec2(w, h), gl_FragCoord.xy) < 100.*resolution.x/w;
-    //     col = mix(col, hash(vec3(5.3, 45., float(i))), float(isInCircle));
-    // }
+    // // for(int i = 0; i < numCircles; i++){
+    // //     bool isInCircle = distance(circlePositions[i]*resolution/vec2(w, h), gl_FragCoord.xy) < 100.*resolution.x/w;
+    // //     col = mix(col, hash(vec3(5.3, 45., float(i))), float(isInCircle));
+    // // }
 
-    vec3 debugCol = vec3(float(ci == 9));
+    // vec3 debugCol = vec3(float(ci == 9));
+
+    col = mix(red, svg, 1.-float(isInBox));
 
     fragColor = vec4(col, 1);
 }

@@ -67,7 +67,7 @@ function render(time) {
     twgl.drawBufferInfo(gl, bufferInfo);
 
     frameBufferIndex = (frameBufferIndex+1)%2;
-
+    
     requestAnimationFrame(render);
 }
 
