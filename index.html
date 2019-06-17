@@ -191,6 +191,31 @@ fragColor = col;
         return mix(p1, p2, ease(x));
     }
 
+    class easeTask{
+        constructor(state, startTime, duration, easeFunc, postFunc){
+            this.state = state;
+            this.startTime = startTime;
+            this.duration = duration;
+            this.easeFunc = easeFunc;
+            this.lastEaseTime = 0;
+            
+            //todo - this probably doesn't make sense - at best, you can only redo the current task (similar to supercollider repeats)
+            this.postFunc = postFunc ? () => null : postFunc; 
+        }
+
+        eval(time){
+            var easeTime = Math.min(Math.max((time-this.startTime)/this.duration, 0), 1);
+            this.lastEaseTime = easeTime;
+            var easeFuncVal = this.easeFunc(this.state, easeTime);
+            if(lastEaseTime == 1) this.postFunc();
+            return easeFuncVal;
+        }
+
+        get isDone(){
+            return this.lastEaseTime == 1;
+        }
+    }
+
     //empty p5 setup function
     function setup() {
         var width = 1920, height = 1080;
