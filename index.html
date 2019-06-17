@@ -228,6 +228,7 @@ fragColor = col;
             flock.addBoid(b);
         }
         // flock.run();
+        //todo - create  initial easeTask - 
     }
 
     //playing with SVG colors
@@ -296,6 +297,19 @@ fragColor = col;
         //render the updated SVG to a canvas
         renderSVGtoCanvas();
         // flock.run();
+        /*
+        if(easeTask.isFinished){
+            select boids
+            select directions (filter out occupied slots, and make sure two boids don't move into same slot)
+            create set of start/end points
+            create interpolation function for seleced boids+points
+            initiate new easeTask
+
+        } else {
+            easeTask.eval(time)
+        }
+
+        */
     }
 </script>
 
