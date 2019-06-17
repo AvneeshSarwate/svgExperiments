@@ -5,6 +5,7 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <title>Title Goes Here</title>
     <script type="text/javascript" src="p5.js"></script>
+    <script type="text/javascript" src="p5.func.js"></script>
     <script type="text/javascript" src="jquery.js"></script>
     <script type="text/javascript" src="svg.js"></script>
     <script type="text/javascript" src="twgl-full.js"></script>
@@ -14,7 +15,7 @@
 
 <body>
     <svg id="eyebeam" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-        x="0px" y="0px" viewbox="0 0 1920 1080" style="enable-background:new 0 0 1920 1080;" xml:space="preserve">
+        x="0px" y="0px" viewbox="0 0 1920 1080" style="enable-background:new 0 0 1920 1080; display: none;" xml:space="preserve">
         <rect width="100%" height="100%"></rect>
         <g xmlns="http://www.w3.org/2000/svg">
             <polygon points="1197.2,906.6 1221.3,906.6 1246,869.6 1270.7,906.6 1294.7,906.6 1256.7,849.6 1256.7,809.1 1235.2,809.1 
@@ -115,9 +116,7 @@ fragColor = col;
 
     //getting information on the B letters to set borders for boids and shader: name -> [index, element, boundingBox]
     var bs = {}
-    letters.map((letter, i) => [i, letter.classes()]).filter(el => el[1].length > 0).forEach(el => bs[el[1]] = [el[0], letters[el[0]], getBoundingBox(baseArrays[el[0]])])
-    var vertBorder = 272;
-    var horBorder =  125;
+    letters.map((letter, i) => [i, letter.classes()]).filter(el => el[1].length > 0).forEach(el => bs[el[1]] = [el[0], letters[el[0]], getBoundingBox(baseArrays[el[0]])])   
 
     var swapInfo = randomSwaps(baseArrays, 100);
 
@@ -154,6 +153,23 @@ fragColor = col;
 
     var flock;
     var width = 1920, height = 1080;
+    var vertBorder = 272, horBorder =  125;
+    var gridX = 16, gridY = 5, gridSize = 104;
+    var p5Ease = new p5.Ease();
+    var ease = x => p5Ease.normalizedLogitSigmoid(x, .6);
+    function pointEase(p1, p2, x){
+        let deltX = p2.x - p1.x;
+        let deltY = p2.y - p1.y;
+        let easeVal = ease(x);
+        let x2 = p1.x + deltX * easeVal;
+        let y2 = p1.y + deltY * easeVal;
+        return {x: x2, y: y2};
+    }
+
+    function randCell(returnSVGCoord){
+        let coordMult = returnSVGCoord ? gridSize : 1;
+        return {x: (1+Math.random()*(gridX-2)) * coordMult, y: (1+Math.random()*(gridY-2)) * coordMult};
+    }
 
     //empty p5 setup function
     function setup() {
@@ -161,11 +177,12 @@ fragColor = col;
         flock = new Flock();
         // Add an initial set of boids into the system
         for (let i = 0; i < 10; i++) {
-            var svgCreator = r => svgDoc.circle(r).center(width/2, height/2).fill("rgb("+((i+1)*10+4)+",0,255)");
-            // svgCreator = () => null;
-            let b = new Boid(width/2, height/2, svgCreator, width, height, 220, 400);
+            let rc = randCell(true);
+            var svgCreator = r => svgDoc.circle(r).center(horBorder + rc.x, vertBorder + rc.y).fill("rgb("+((i+1)*10+4)+",0,255)");
+            let b = new Boid(horBorder + rc.x, vertBorder + rc.y, svgCreator, width, height, {x: horBorder, y: vertBorder}, gridSize*1.5);
             flock.addBoid(b);
         }
+        // flock.run();
     }
 
     //playing with SVG colors
@@ -195,7 +212,7 @@ fragColor = col;
             return warp;
         }, width, height);
 
-        transformFunc = a => a;
+        // transformFunc = a => a;
         var foldRes = 50;// + 50 * sinN(time/10);
         var t2 = time / 10;
         // transformFunc = xy => ({x: xy.x*.7 + sinN(t2+xy.x/width*PI*foldRes)*0.3*width*sinN(time/1.2), 

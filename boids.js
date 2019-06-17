@@ -32,7 +32,8 @@ function Boid(x, y, svgCreator, width, height, letterSize, circleSize) {
     this.acceleration = createVector(0, 0);
     this.velocity = createVector(random(-1, 1), random(-1, 1));
     this.position = createVector(x, y);
-    this.r = letterSize+circleSize/2;
+    this.rx = (letterSize.x+circleSize/2) * 1.1;
+    this.ry = (letterSize.y+circleSize/2) * 1.1;
     this.maxspeed = 3 * 2;    // Maximum speed
     this.maxforce = 0.05; // Maximum steering force
     this.width = width;
@@ -72,6 +73,13 @@ Boid.prototype.update = function () {
     this.velocity.add(this.acceleration);
     // Limit speed
     this.velocity.limit(this.maxspeed);
+
+    var isXDominant = this.velocity.x >= this.velocity.y;
+    var velMag = this.velocity.mag();
+
+    var singleDirection = createVector(isXDominant ? velMag : 0, isXDominant ? 0 : velMag);
+    this.velocity = singleDirection;
+
     this.position.add(this.velocity);
     // Reset accelertion to 0 each cycle
     this.acceleration.mult(0);
@@ -98,8 +106,12 @@ Boid.prototype.render = function () {
 
 // Bounce
 Boid.prototype.borders = function () {
-    if (this.position.x < this.r || this.position.x > this.width - this.r) this.velocity.x = -this.velocity.x;
-    if (this.position.y < this.r || this.position.y > this.height - this.r) this.velocity.y= -this.velocity.y;
+    if (this.position.x < this.rx || this.position.x > this.width - this.rx) {
+        this.velocity.x = -this.velocity.x;
+    }
+    if (this.position.y < this.ry || this.position.y > this.height - this.ry) {
+        this.velocity.y= -this.velocity.y;
+    }
 }
 
 // Separation

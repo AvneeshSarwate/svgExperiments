@@ -625,25 +625,25 @@ void main () {
     vec3 bb = texture(backbuffer, rotate(stN, cent, 0.005)).rgb;
 
     vec3 col = (mix(bb, svg, 0.2)+svg)*(1.+sin(time/2.+stN.x*PI)*0.01);
-    // col = mix(bb, svg, 0.09);
-    // col = mix(col, svg, float(isInBox));
+    col = mix(bb, svg, 0.09);
+    col = mix(col, svg, float(isInBox));
     // // col = mix(col, red, float(distance(resolution/2., gl_FragCoord.xy) < 100.*resolution.x/w));
 
-    // int ci = max(min(int(floor((svg.r*255./10.))-1.), 9), 0);
-    // vec2 flipFragCoord = vec2(gl_FragCoord.x, resolution.y-gl_FragCoord.y);
-    // vec2 flipCirlce = vec2(circlePositions[ci].x, h-circlePositions[ci].y);
-    // bool isInCircle = distance(flipCirlce*resolution/vec2(w, h), gl_FragCoord.xy) < circleRadii[ci]*max(resolution.x/w, resolution.y/h)*1.1;
-    // bool isNotBackground = svg.b != 0.;
-    // col = mix(col, traffic(stN, hash(vec3(5.3, 45., float(ci)))), float(isInCircle && isInBox && isNotBackground));
+    int ci = max(min(int(floor((svg.r*255./10.))-1.), 9), 0);
+    vec2 flipFragCoord = vec2(gl_FragCoord.x, resolution.y-gl_FragCoord.y);
+    vec2 flipCirlce = vec2(circlePositions[ci].x, h-circlePositions[ci].y);
+    bool isInCircle = distance(flipCirlce*resolution/vec2(w, h), gl_FragCoord.xy) < circleRadii[ci]*max(resolution.x/w, resolution.y/h)*1.1;
+    bool isNotBackground = svg.b != 0.;
+    col = mix(col, traffic(stN, hash(vec3(5.3, 45., float(ci)))), float(isInCircle && isInBox && isNotBackground));
 
     // // for(int i = 0; i < numCircles; i++){
     // //     bool isInCircle = distance(circlePositions[i]*resolution/vec2(w, h), gl_FragCoord.xy) < 100.*resolution.x/w;
     // //     col = mix(col, hash(vec3(5.3, 45., float(i))), float(isInCircle));
     // // }
 
-    // vec3 debugCol = vec3(float(ci == 9));
+    vec3 debugCol = vec3(float(ci == 9));
 
-    col = mix(red, svg, 1.-float(isInBox));
+    // col = mix(red, svg, 1.-float(isInBox));
 
     fragColor = vec4(col, 1);
 }
