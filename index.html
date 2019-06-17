@@ -168,7 +168,27 @@ fragColor = col;
 
     function randCell(returnSVGCoord){
         let coordMult = returnSVGCoord ? gridSize : 1;
-        return {x: (1+Math.random()*(gridX-2)) * coordMult, y: (1+Math.random()*(gridY-2)) * coordMult};
+        let rfl = n => Math.floor(Math.random()*n);
+        return {x: (1+rfl(gridX-1)) * coordMult, y: (1+rfl(gridY-1)) * coordMult};
+    }
+
+    function cellToSVGCoord(gridX, gridY){
+        return {x: horBorder+gridX*gridSize, y: vertBorder+gridY*gridSize};
+    }
+
+    function moveBoidSVG(boid, xy){
+        boid.position.x = xy.x;
+        boid.position.y = xy.y;
+        boid.render();
+    }
+
+    function moveBoidCell(boid, cellXY){
+        let xy = cellToSVGCoord(cellXY.x, cellXY.y);
+        moveBoidSVG(boid, xy);
+    }
+
+    function easePoint(p1, p2, x){
+        return mix(p1, p2, ease(x));
     }
 
     //empty p5 setup function
@@ -179,7 +199,7 @@ fragColor = col;
         for (let i = 0; i < 10; i++) {
             let rc = randCell(true);
             var svgCreator = r => svgDoc.circle(r).center(horBorder + rc.x, vertBorder + rc.y).fill("rgb("+((i+1)*10+4)+",0,255)");
-            let b = new Boid(horBorder + rc.x, vertBorder + rc.y, svgCreator, width, height, {x: horBorder, y: vertBorder}, gridSize*1.5);
+            let b = new Boid(horBorder + rc.x, vertBorder + rc.y, svgCreator, width, height, {x: horBorder, y: vertBorder}, gridSize);
             flock.addBoid(b);
         }
         // flock.run();
