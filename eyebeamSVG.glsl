@@ -573,6 +573,7 @@ uniform sampler2D selfieVid;
 int numCircles = 10;
 uniform vec2 circlePositions[20];
 uniform float circleRadii[20];
+uniform float cameraBlend;
 
 out vec4 fragColor;
 
@@ -697,7 +698,7 @@ void main () {
 
 
     float noiseWarp = snoise(vec3(stN*5., time));
-    float bgBlendSlider = sinN(time/3.);
+    float bgBlendSlider = cameraBlend; sinN(time/3.);
     float bgBlend = mix(noiseWarp*mix(0., 4., bgBlendSlider), 1., bgBlendSlider);
     // col = mix(col, vec3(1., 0, 0), bgBlend * float(isInBox && ! isNotBackground));
 
