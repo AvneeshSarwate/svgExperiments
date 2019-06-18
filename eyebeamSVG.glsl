@@ -639,7 +639,7 @@ void main () {
     col = mix(col, traffic(stN, hash(vec3(5.3, 45., float(ci)))), float(isInCircle && isInBox && isNotBackground));
     vec2 fcFlipped = vec2(gl_FragCoord.x, resolution.y -gl_FragCoord.y);
     vec2 mappedEyeCenter = (gl_FragCoord.xy - flipCirlce*resolution/vec2(w, h))/resolution*9. + vec2(0.6, 0.5);
-    vec3 mappedEye = texture(eyeVideo1, mappedEyeCenter).rgb;
+    vec3 mappedEye = texture(eyeVideo1, vec2(mappedEyeCenter.x, 1.-mappedEyeCenter.y)).rgb;
     col = mix(col, mappedEye, float(ci % 3 == 0) * float(isInCircle && isInBox && isNotBackground));
 
     // col = mix(col, mix(bb, col, 0.3), float(isInBox));
