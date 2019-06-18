@@ -1,4 +1,4 @@
-var slider1, slider2;
+var slider1 = 0, slider2 = 0;
 // Enable WebMidi.js
 WebMidi.enable(function (err) {
 

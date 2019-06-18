@@ -12,7 +12,7 @@
 		"classnamespace" : "box",
 		"rect" : [ 59.0, 104.0, 1151.0, 637.0 ],
 		"bglocked" : 0,
-		"openinpresentation" : 0,
+		"openinpresentation" : 1,
 		"default_fontsize" : 12.0,
 		"default_fontface" : 0,
 		"default_fontname" : "Arial",
@@ -45,9 +45,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 564.0, 342.0, 50.0, 22.0 ],
-					"presentation" : 1,
-					"presentation_rect" : [ 564.0, 342.0, 50.0, 22.0 ],
-					"text" : "97 1 0"
+					"text" : "93 2 0"
 				}
 
 			}
@@ -59,8 +57,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 364.0, 329.0, 42.0, 22.0 ],
-					"presentation" : 1,
-					"presentation_rect" : [ 364.0, 329.0, 42.0, 22.0 ],
 					"text" : "$1 2 0"
 				}
 
@@ -73,8 +69,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 291.0, 329.0, 42.0, 22.0 ],
-					"presentation" : 1,
-					"presentation_rect" : [ 291.0, 329.0, 42.0, 22.0 ],
 					"text" : "$1 1 0"
 				}
 
@@ -86,8 +80,6 @@
 					"numinlets" : 3,
 					"numoutlets" : 0,
 					"patching_rect" : [ 311.0, 432.0, 155.0, 22.0 ],
-					"presentation" : 1,
-					"presentation_rect" : [ 311.0, 432.0, 155.0, 22.0 ],
 					"text" : "ctlout @name \"from Max 1\""
 				}
 
@@ -102,7 +94,7 @@
 					"parameter_enable" : 0,
 					"patching_rect" : [ 375.0, 119.0, 20.0, 140.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 375.0, 119.0, 20.0, 140.0 ]
+					"presentation_rect" : [ 278.0, 108.0, 85.0, 388.0 ]
 				}
 
 			}
@@ -116,7 +108,7 @@
 					"parameter_enable" : 0,
 					"patching_rect" : [ 286.0, 100.0, 20.0, 140.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 286.0, 100.0, 20.0, 140.0 ]
+					"presentation_rect" : [ 135.0, 108.0, 84.0, 388.0 ]
 				}
 
 			}
