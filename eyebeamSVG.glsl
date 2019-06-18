@@ -623,7 +623,7 @@ vec3 matrixCam () {
     vec2 stN = uvN();
     float numCells = 400.;
     
-    vec3 cam = texture(selfieVid, vec2(stN.x, 1.-stN.y)).rgb;
+    vec3 cam = texture(selfieVid, 1.-stN).rgb;
 
     vec2 hashN = stN + (cam.xy-0.5)/numCells;(hash(vec3(stN, t2)).xy + -0.5)/numCells;
 
@@ -701,7 +701,6 @@ void main () {
     float bgBlend = mix(noiseWarp*mix(0., 4., bgBlendSlider), 1., bgBlendSlider);
     // col = mix(col, vec3(1., 0, 0), bgBlend * float(isInBox && ! isNotBackground));
 
-    vec3 selfie = texture(selfieVid, sampN).rgb;
     vec3 matrix = matrixCam();
     col = mix(col, matrix, bgBlend * float(isInBox && ! isNotBackground));
 
