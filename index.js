@@ -1,2 +1,2 @@
 
-var something;
+var something2;
