@@ -76,8 +76,21 @@ function render(time) {
     gl.useProgram(programInfo.program);
     twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo);
     twgl.setUniforms(programInfo, uniforms);
+
     twgl.bindFramebufferInfo(gl, frameBuffers[(frameBufferIndex+1)%2]);
     twgl.drawBufferInfo(gl, bufferInfo);
+
+    const uniforms_stage2 = {
+        time: time * 0.001,
+        resolution: [gl.canvas.width, gl.canvas.height],
+        lastStage: frameBuffers[(frameBufferIndex+1)%2].attachments[0],
+        warpSlider: sliders[3]/127
+    }
+
+    gl.useProgram(programInfo_stage2.program);
+    twgl.setBuffersAndAttributes(gl, programInfo_stage2, bufferInfo);
+    twgl.setUniforms(programInfo_stage2, uniforms_stage2);
+
     twgl.bindFramebufferInfo(gl);
     twgl.drawBufferInfo(gl, bufferInfo);
 
@@ -88,11 +101,16 @@ function render(time) {
 
 const headerFSreq = $.get("header.frag");
 const fsReq = $.get("eyebeamSVG.glsl");
+const fsReq2 = $.get("eyebeamSVG_stage2.glsl");
 let programInfo = twgl.createProgramInfo(gl, ["vs", "fs"]);
+let programInfo_stage2 = twgl.createProgramInfo(gl, ["vs", "fs"]);
+
 console.log("setting up promises", eyeVideo1.play());
-Promise.all([headerFSreq, fsReq, eyeVideo1.play(), eyeVideo2.play(), eyeVideo3.play(), selfieVid.play()]).then( shaderArray => {
+Promise.all([headerFSreq, fsReq, fsReq2, eyeVideo1.play(), eyeVideo2.play(), eyeVideo3.play(), selfieVid.play()]).then( shaderArray => {
     console.log("shaderArray", shaderArray);
     programInfo = twgl.createProgramInfo(gl, ["vs", shaderArray[0]+shaderArray[1]]);
+    programInfo_stage2 = twgl.createProgramInfo(gl, ["vs", shaderArray[0]+shaderArray[2]]);
+
     textures = twgl.createTextures(gl, {
         svgFrame: {src: svgCanvas}, 
         eyeVideo1: {src: eyeVideo1},
