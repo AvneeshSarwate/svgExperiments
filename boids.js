@@ -106,11 +106,16 @@ Boid.prototype.render = function () {
 
 // Bounce
 Boid.prototype.borders = function () {
-    if (this.position.x < this.rx || this.position.x > this.width - this.rx) {
+    var fac =  2; 1.1; //border overlap factor
+    if (this.position.x < this.rx/fac || this.position.x > this.width - this.rx/fac) {
         this.velocity.x = -this.velocity.x;
+        if(this.position.x < this.rx/fac) this.position.x = this.rx/fac;
+        if(this.position.x > this.width - this.rx/fac) this.position.x = this.width - this.rx/fac;
     }
-    if (this.position.y < this.ry || this.position.y > this.height - this.ry) {
+    if (this.position.y < this.ry/fac || this.position.y > this.height - this.ry/fac) {
         this.velocity.y= -this.velocity.y;
+        if(this.position.y < this.ry/fac) this.position.y = this.ry/fac;
+        if(this.position.y > this.height - this.ry/fac) this.position.y = this.height - this.ry/fac;
     }
 }
 
