@@ -654,8 +654,13 @@ void main () {
     mappedEye = texture(eyeVideo3, vec2(mappedEyeCenter.x, 1.-mappedEyeCenter.y)).rgb;
     col = mix(col, mappedEye, float(ci > 9) * float(ci % 5 == 2) * float(isInCircle && isInBox && isNotBackground));
 
-    vec3 bgTraffic = 1. -traffic(stN, vec3(3., 0., .0));
-    col = mix(col, bgTraffic, float(isInBox && !isNotBackground));
+
+    float noiseWarp = snoise(vec3(stN*5., time));
+    float bgBlend = sinN(time/3.);
+    col = mix(col, vec3(1., 0, 0), mix(noiseWarp*mix(0., 4., bgBlend), 1., bgBlend) * float(isInBox && ! isNotBackground));
+
+    // vec3 bgTraffic = 1. -traffic(stN, vec3(3., 0., .0));
+    // col = mix(col, bgTraffic, float(isInBox && !isNotBackground));
 
     // col = mix(col, mix(bb, col, 0.3), float(isInBox));
 
