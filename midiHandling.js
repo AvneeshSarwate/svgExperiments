@@ -1,4 +1,4 @@
-var slider1 = 0, slider2 = 0;
+var sliders = Array.from(new Array(127), (e, i) => 0);
 // Enable WebMidi.js
 WebMidi.enable(function (err) {
 
@@ -10,8 +10,6 @@ WebMidi.enable(function (err) {
 
     // Listen for a 'note on' message on all channels
     input.addListener('controlchange', "all", function (e) {
-        console.log("Received 'control' message: ", e);
-        if(e.controller.number == 1) slider1 = e.value;
-        if(e.controller.number == 2) slider2 = e.value;
+        sliders[e.controller.number] = e.value;
     });
 });

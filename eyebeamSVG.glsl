@@ -574,6 +574,7 @@ int numCircles = 10;
 uniform vec2 circlePositions[20];
 uniform float circleRadii[20];
 uniform float cameraBlend;
+uniform float feedbackRotation;
 
 out vec4 fragColor;
 
@@ -668,7 +669,7 @@ void main () {
     vec2 transN = vec2(mod(sampN.x + time/5., 1.), mod(sampN.y + sin(time/2.5*PI + sampN.x*PI)*0.1, 1.));
     bool isInBox = inBox(stN, lsX/w, (w-lsX)/w, lsY/h, (h-lsY)/h);
     vec3 svg = texture(svgFrame, mix(sampN, transN, 0.0)).rgb; 
-    vec3 bb = texture(backbuffer, rotate(stN, cent, 0.005)).rgb;
+    vec3 bb = texture(backbuffer, rotate(stN, cent, 0.005 * feedbackRotation)).rgb;
     vec3 bbN = texture(backbuffer, stN).rgb;
 
     vec3 col = (mix(bb, svg, 0.2)+svg)*(1.+sin(time/2.+stN.x*PI)*0.01);

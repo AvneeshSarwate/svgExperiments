@@ -69,7 +69,8 @@ function render(time) {
         backbuffer: frameBuffers[frameBufferIndex].attachments[0],
         circlePositions: flock.boids.map(b => [b.position.x, b.position.y]).flat(),
         circleRadii: flock.boids.map(b => b.svgElement.ry()),
-        cameraBlend: slider2/127
+        cameraBlend: sliders[2]/127,
+        feedbackRotation: sliders[1]/127
     };
 
     gl.useProgram(programInfo.program);

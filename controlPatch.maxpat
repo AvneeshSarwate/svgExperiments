@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 59.0, 104.0, 1151.0, 637.0 ],
+		"rect" : [ 696.0, 196.0, 888.0, 637.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 1,
 		"default_fontsize" : 12.0,
@@ -39,13 +39,47 @@
 		"subpatcher_template" : "",
 		"boxes" : [ 			{
 				"box" : 				{
+					"fontface" : 1,
+					"fontsize" : 36.0,
+					"id" : "obj-5",
+					"linecount" : 2,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 413.0, 119.0, 189.0, 87.0 ],
+					"presentation" : 1,
+					"presentation_linecount" : 2,
+					"presentation_rect" : [ 317.0, 59.0, 141.0, 87.0 ],
+					"text" : "Camera Blend"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"fontface" : 1,
+					"fontsize" : 36.0,
+					"id" : "obj-4",
+					"linecount" : 3,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 85.0, 106.5, 189.0, 127.0 ],
+					"presentation" : 1,
+					"presentation_linecount" : 3,
+					"presentation_rect" : [ 91.0, 19.0, 148.0, 127.0 ],
+					"text" : "Letter warping\n+trails"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-11",
 					"maxclass" : "message",
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 564.0, 342.0, 50.0, 22.0 ],
-					"text" : "93 2 0"
+					"text" : "127 2 0"
 				}
 
 			}
@@ -94,7 +128,7 @@
 					"parameter_enable" : 0,
 					"patching_rect" : [ 375.0, 119.0, 20.0, 140.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 278.0, 108.0, 85.0, 388.0 ]
+					"presentation_rect" : [ 345.0, 164.0, 85.0, 388.0 ]
 				}
 
 			}
@@ -108,7 +142,7 @@
 					"parameter_enable" : 0,
 					"patching_rect" : [ 286.0, 100.0, 20.0, 140.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 135.0, 108.0, 84.0, 388.0 ]
+					"presentation_rect" : [ 123.0, 164.0, 84.0, 388.0 ]
 				}
 
 			}
