@@ -105,11 +105,19 @@ fragColor = col;
     //make SVG manipulatable via SVG.js library
     var svgDoc = SVG.adopt($("#eyebeam")[0]);
 
-    const eyeVideo1 = document.createElement("video");
-    eyeVideo1.muted = true;
-    eyeVideo1.loop = true;
-    eyeVideo1.src = "eyeblink_01.mp4";
-    eyeVideo1.style = "display: none;"
+    function createEyeVideo(url){
+        let eyeVideo = document.createElement("video");
+        eyeVideo.muted = true;
+        eyeVideo.loop = true;
+        eyeVideo.src = url;
+        eyeVideo.style = "display: none;"
+        return eyeVideo;
+    }
+
+    const eyeVideo1 = createEyeVideo("eyeblink_004.mp4");
+    const eyeVideo2 = createEyeVideo("eyeblink_005.mp4");
+    const eyeVideo3 = createEyeVideo("eyeblink_001.mp4");
+
 
     //making copies of the initial positions/orientations of the SVG letters
     var letters = svgDoc.children()[1].children();
@@ -227,7 +235,7 @@ fragColor = col;
         var width = 1920, height = 1080;
         flock = new Flock();
         // Add an initial set of boids into the system
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 20; i++) {
             let rc = randCell(true);
             var svgCreator = r => svgDoc.circle(r).center(horBorder + rc.x, vertBorder + rc.y).fill("rgb("+((i+1)*10+4)+",0,255)");
             let b = new Boid(horBorder + rc.x, vertBorder + rc.y, svgCreator, width, height, {x: horBorder, y: vertBorder}, gridSize);
