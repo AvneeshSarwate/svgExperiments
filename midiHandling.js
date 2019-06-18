@@ -1,0 +1,18 @@
+var slider1, slider2;
+// Enable WebMidi.js
+WebMidi.enable(function (err) {
+
+    if (err) {
+      console.log("WebMidi could not be enabled.", err);
+    }
+    // Retrieve an input by name, id or index
+    var input = WebMidi.getInputByName("from Max 1");
+    input = WebMidi.inputs[0];
+
+    // Listen for a 'note on' message on all channels
+    input.addListener('controlchange', "all",
+    function (e) {
+        console.log("Received 'control' message (" + e.note.name + e.note.octave + ").");
+    }
+    );
+});
