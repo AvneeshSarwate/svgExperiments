@@ -624,17 +624,19 @@ vec3 matrixCam () {
     float t2 = time/5. + 1000.;
 
     vec2 stN = uvN();
+    stN = quant(stN, 600.);
     float numCells = 400.;
     
     vec3 cam = texture(selfieVid, 1.-stN).rgb;
 
     vec2 hashN = stN + (cam.xy-0.5)/numCells;(hash(vec3(stN, t2)).xy + -0.5)/numCells;
+    // hashN = quant(hashN, 600.);
 
     vec3 cc;
     float decay = 0.999;
     float decay2 = 0.01;
     float feedback;
-    vec4 bb = texture(backbuffer, hashN);
+    vec4 bb = texture(backbuffer, quant(hashN, 600.));
     float lastFeedback = bb.a;
 
     // vec2 multBall = multiBallCondition(stN, t2/2.);
