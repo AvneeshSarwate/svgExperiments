@@ -596,9 +596,10 @@ bool inBox(vec2 nn, float x1, float x2, float y1, float y2){
 
 
 vec3 traffic(vec2 stN, vec3 params){
-    float t2 = params.x* PI; 
-    float t3 = time/5.;
-    float t4 = time;
+    float timeScale = 0.3;
+    float t2 = params.x* PI * timeScale; 
+    float t3 = time/5. * timeScale;
+    float t4 = time * timeScale;
     float rad = params.y;
     vec2 warp1 = vec2(-1., 1.);
     vec2 warp2 = vec2(0.5, 0.);
@@ -612,7 +613,7 @@ vec3 traffic(vec2 stN, vec3 params){
 
     
     //take2
-    float timeVal = time+3000.;
+    float timeVal = time * timeScale +3000.;
     stN = quant(stN, 200.);
     vec2 stN2 = rotate(stN, vec2(0.5), time/2.);
     vec3 c = inStripeX2(stN, timeVal/10. * (.5 + stN.x)) * inStripeY2(stN, timeVal/7. * (.5 + stN.y));
