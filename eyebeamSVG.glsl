@@ -569,6 +569,7 @@ uniform sampler2D svgFrame;
 uniform sampler2D eyeVideo1;
 uniform sampler2D eyeVideo2;
 uniform sampler2D eyeVideo3;
+uniform sampler2D selfieVid;
 int numCircles = 10;
 uniform vec2 circlePositions[20];
 uniform float circleRadii[20];
@@ -616,6 +617,46 @@ vec3 traffic(vec2 stN, vec3 params){
     return c;
 }
 
+vec3 matrixCam () {
+    float t2 = time/5. + 1000.;
+
+    vec2 stN = uvN();
+    float numCells = 400.;
+    
+    vec3 cam = texture(selfieVid, vec2(stN.x, 1.-stN.y)).rgb;
+
+    vec2 hashN = stN + (cam.xy-0.5)/numCells;(hash(vec3(stN, t2)).xy + -0.5)/numCells;
+
+    vec3 cc;
+    float decay = 0.999;
+    float decay2 = 0.01;
+    float feedback;
+    vec4 bb = texture(backbuffer, hashN);
+    float lastFeedback = bb.a;
+
+    // vec2 multBall = multiBallCondition(stN, t2/2.);
+    bool condition = mod(stN.x*numCells, 1.) < sinN(time + stN.x*PI) || mod(stN.y*numCells, 1.) < cosN(time + stN.y*PI); //multBall.x == 1.; 
+    condition = distance(quant(hashN, numCells) + vec2(sinN(t2), cosN(t2))/numCells/2. - 1./numCells/4., hashN) < 1./(numCells*10.);
+
+    //   implement the trailing effectm using the alpha channel to track the state of decay 
+    if(condition){
+        if(lastFeedback < .9) {
+            feedback = 1. ;// * multBall.y;
+        } else {
+            // feedback = lastFeedback * decay;
+            feedback = lastFeedback - decay2;
+        }
+    }
+    else {
+        // feedback = lastFeedback * decay;
+        feedback = lastFeedback - decay2;
+    }
+    
+    vec3 col = vec3(feedback);
+
+    return col;
+}
+
 void main () {
     vec2 stN = uvN();
     vec2 sampN= vec2(stN.x, 1.-stN.y);
@@ -656,10 +697,17 @@ void main () {
 
 
     float noiseWarp = snoise(vec3(stN*5., time));
-    float bgBlend = sinN(time/3.);
-    col = mix(col, vec3(1., 0, 0), mix(noiseWarp*mix(0., 4., bgBlend), 1., bgBlend) * float(isInBox && ! isNotBackground));
+    float bgBlendSlider = sinN(time/3.);
+    float bgBlend = mix(noiseWarp*mix(0., 4., bgBlendSlider), 1., bgBlendSlider);
+    // col = mix(col, vec3(1., 0, 0), bgBlend * float(isInBox && ! isNotBackground));
+
+    vec3 selfie = texture(selfieVid, sampN).rgb;
+    vec3 matrix = matrixCam();
+    col = mix(col, matrix, bgBlend * float(isInBox && ! isNotBackground));
 
     // vec3 bgTraffic = 1. -traffic(stN, vec3(3., 0., .0));
+    // col = mix(col, bgTraffic, float(isInBox && !isNotBackground));
+
     // col = mix(col, bgTraffic, float(isInBox && !isNotBackground));
 
     // col = mix(col, mix(bb, col, 0.3), float(isInBox));
@@ -670,5 +718,5 @@ void main () {
     vec3 eye1 = texture(eyeVideo1, sampN).rgb;
     vec3 eyeCrop = mix(black, eye1, float(isInEye1));
 
-    fragColor = vec4(col, 1);
+    fragColor = vec4(col, matrix.x);
 }
