@@ -47,7 +47,7 @@
 					"patching_rect" : [ 564.0, 342.0, 50.0, 22.0 ],
 					"presentation" : 1,
 					"presentation_rect" : [ 564.0, 342.0, 50.0, 22.0 ],
-					"text" : "0 2 0"
+					"text" : "97 1 0"
 				}
 
 			}

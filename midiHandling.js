@@ -7,12 +7,11 @@ WebMidi.enable(function (err) {
     }
     // Retrieve an input by name, id or index
     var input = WebMidi.getInputByName("from Max 1");
-    input = WebMidi.inputs[0];
 
     // Listen for a 'note on' message on all channels
     input.addListener('controlchange', "all",
     function (e) {
-        console.log("Received 'control' message (" + e.note.name + e.note.octave + ").");
+        console.log("Received 'control' message: ", e);
     }
     );
 });
