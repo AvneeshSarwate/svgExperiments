@@ -613,7 +613,7 @@ vec3 traffic(vec2 stN, vec3 params){
 
 void main () {
     vec2 stN = uvN();
-    vec2 sampN= vec2(stN.x, 1.-stN.y);
+    vec2 sampN= vec2(stN.x, stN.y);
     vec2 cent = vec2(0.5); 
 
     
