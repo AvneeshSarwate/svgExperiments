@@ -654,6 +654,9 @@ void main () {
     mappedEye = texture(eyeVideo3, vec2(mappedEyeCenter.x, 1.-mappedEyeCenter.y)).rgb;
     col = mix(col, mappedEye, float(ci > 9) * float(ci % 5 == 2) * float(isInCircle && isInBox && isNotBackground));
 
+    vec3 bgTraffic = 1. -traffic(stN, vec3(3., 0., .0));
+    col = mix(col, bgTraffic, float(isInBox && !isNotBackground));
+
     // col = mix(col, mix(bb, col, 0.3), float(isInBox));
 
     // vec3 debugCol = vec3(float(ci == 9));
