@@ -597,6 +597,7 @@ void main () {
     float xOffset = 0.3;
     float yOffset = 0.3;
     vec2 projectionScale = vec2(mix(stN.x, interp(stN.x, 0., 1., xOffset, 1.-xOffset), stN.y),  mix(stN.y, interp(stN.y, 0., 1., yOffset, 1.-yOffset), stN.x));  
+    bool isInScale = xOffset < stN.x && stN.x < 1. - xOffset && yOffset < stN.y && stN.y < 1. - yOffset;
 
     vec2 sampN = stN;
     vec2 cent = vec2(0.5); 
@@ -618,6 +619,7 @@ void main () {
     col = mix(black, col, float(stN.y > baseCutSlider));
 
     float dist = distance(projectionScale, stN);
+    // col = mix(red, col, float(isInScale));
 
     fragColor = vec4(vec3(col), 1);
 }

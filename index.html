@@ -372,9 +372,9 @@ fragColor = col;
 
             var frameBox = { x: 0, y: 0, width: width, height: height };
             var bbox = getBoundingBox(baseArrays[i]);
-            var xy2 = transformFunc(bbox);
-            // bbox.x = xy2.x;
-            // bbox.y = xy2.y;
+            var xy2 = mix(bbox, transformFunc(bbox), sliders[5]);
+            bbox.x = xy2.x;
+            bbox.y = xy2.y;
             letter.plot(putLetterInBox(shapeArray, bbox));
 
             // if(frameCount%3 == 0 && swapInfo.swaps.length >= 0){
