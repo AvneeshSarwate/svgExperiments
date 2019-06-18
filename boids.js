@@ -78,7 +78,7 @@ Boid.prototype.update = function () {
     var velMag = this.velocity.mag();
 
     var singleDirection = createVector(isXDominant ? velMag : 0, isXDominant ? 0 : velMag);
-    this.velocity = singleDirection;
+    // this.velocity = singleDirection;
 
     this.position.add(this.velocity);
     // Reset accelertion to 0 each cycle

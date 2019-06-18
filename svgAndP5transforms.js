@@ -135,8 +135,8 @@ function boxMix(box1, box2, a) {
 //wrapper function to execute SVG Path cleanup
 function replaceVH(ind, baseArrays, letters) {
     var newPath = removeVHFromPath(baseArrays[ind]);
-    console.log(baseArrays[ind]);
-    console.log(newPath);
+    // console.log(baseArrays[ind]);
+    // console.log(newPath);
     var stringPath = pathArrayToString(newPath);
     letters[ind].plot(stringPath);
 }

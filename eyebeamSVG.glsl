@@ -566,6 +566,7 @@ float minDistToBorder(vec2 stN){
 
 
 uniform sampler2D svgFrame;
+uniform sampler2D eyeVideo1;
 int numCircles = 10;
 uniform vec2 circlePositions[10];
 uniform float circleRadii[10];
@@ -617,33 +618,29 @@ void main () {
     vec2 stN = uvN();
     vec2 sampN= vec2(stN.x, 1.-stN.y);
     vec2 cent = vec2(0.5); 
+
+    
     
     vec2 transN = vec2(mod(sampN.x + time/5., 1.), mod(sampN.y + sin(time/2.5*PI + sampN.x*PI)*0.1, 1.));
-    // bool isInBox = lw/w < stN.x && stN.x < (w-lw)/w && lw/h < stN.y && stN.y < (h-lw)/h; 
     bool isInBox = inBox(stN, lsX/w, (w-lsX)/w, lsY/h, (h-lsY)/h);
     vec3 svg = texture(svgFrame, mix(sampN, transN, 0.0)).rgb; 
-    vec3 bb = texture(backbuffer, rotate(stN, cent, 0.005)).rgb;
+    // vec3 bb = texture(backbuffer, rotate(stN, cent, 0.005)).rgb;
 
-    vec3 col = (mix(bb, svg, 0.2)+svg)*(1.+sin(time/2.+stN.x*PI)*0.01);
-    col = mix(bb, svg, 0.09);
-    col = mix(col, svg, float(isInBox));
-    // // col = mix(col, red, float(distance(resolution/2., gl_FragCoord.xy) < 100.*resolution.x/w));
+    // vec3 col = (mix(bb, svg, 0.2)+svg)*(1.+sin(time/2.+stN.x*PI)*0.01);
+    // col = mix(bb, svg, 0.09);
+    // col = mix(col, svg, float(isInBox));
 
-    int ci = max(min(int(floor((svg.r*255./10.))-1.), 9), 0);
-    vec2 flipFragCoord = vec2(gl_FragCoord.x, resolution.y-gl_FragCoord.y);
-    vec2 flipCirlce = vec2(circlePositions[ci].x, h-circlePositions[ci].y);
-    bool isInCircle = distance(flipCirlce*resolution/vec2(w, h), gl_FragCoord.xy) < circleRadii[ci]*max(resolution.x/w, resolution.y/h)*1.1;
-    bool isNotBackground = svg.b != 0.;
-    col = mix(col, traffic(stN, hash(vec3(5.3, 45., float(ci)))), float(isInCircle && isInBox && isNotBackground));
+    // int ci = max(min(int(floor((svg.r*255./10.))-1.), 9), 0);
+    // vec2 flipFragCoord = vec2(gl_FragCoord.x, resolution.y-gl_FragCoord.y);
+    // vec2 flipCirlce = vec2(circlePositions[ci].x, h-circlePositions[ci].y);
+    // bool isInCircle = distance(flipCirlce*resolution/vec2(w, h), gl_FragCoord.xy) < circleRadii[ci]*max(resolution.x/w, resolution.y/h)*1.1;
+    // bool isNotBackground = svg.b != 0.;
+    // col = mix(col, traffic(stN, hash(vec3(5.3, 45., float(ci)))), float(isInCircle && isInBox && isNotBackground));
 
-    // // for(int i = 0; i < numCircles; i++){
-    // //     bool isInCircle = distance(circlePositions[i]*resolution/vec2(w, h), gl_FragCoord.xy) < 100.*resolution.x/w;
-    // //     col = mix(col, hash(vec3(5.3, 45., float(i))), float(isInCircle));
-    // // }
-
-    vec3 debugCol = vec3(float(ci == 9));
+    // vec3 debugCol = vec3(float(ci == 9));
 
     // col = mix(red, svg, 1.-float(isInBox));
+    vec3 eyes = texture(eyeVideo1, sampN).rgb;
 
-    fragColor = vec4(col, 1);
+    fragColor = vec4(eyes, 1);
 }

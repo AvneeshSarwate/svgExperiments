@@ -105,6 +105,12 @@ fragColor = col;
     //make SVG manipulatable via SVG.js library
     var svgDoc = SVG.adopt($("#eyebeam")[0]);
 
+    const eyeVideo1 = document.createElement("video");
+    eyeVideo1.muted = true;
+    eyeVideo1.loop = true;
+    eyeVideo1.src = "eyeblink_01.mp4";
+    eyeVideo1.style = "display: none;"
+
     //making copies of the initial positions/orientations of the SVG letters
     var letters = svgDoc.children()[1].children();
     var baseArrays = letters.map(elem => elem.array());
@@ -191,7 +197,7 @@ fragColor = col;
         return mix(p1, p2, ease(x));
     }
 
-    class easeTask{
+    class easeTask {
         constructor(state, startTime, duration, easeFunc, postFunc){
             this.state = state;
             this.startTime = startTime;
@@ -230,6 +236,26 @@ fragColor = col;
         // flock.run();
         //todo - create  initial easeTask - 
     }
+
+    function shuffle(a) {
+        var j, x, i;
+        for (i = a.length - 1; i > 0; i--) {
+            j = Math.floor(Math.random() * (i + 1));
+            x = a[i];
+            a[i] = a[j];
+            a[j] = x;
+        }
+        return a;
+    }
+
+    function randSetSample(n, k){
+        let inds = Array.from(new Array(n), (e, i) => i);
+        let shuffleArr = shuffle(inds);
+        return shuffleArr.slice(0, k);
+    }
+
+    
+
 
     //playing with SVG colors
     svgDoc.children()[0].fill("black");
@@ -296,11 +322,14 @@ fragColor = col;
 
         //render the updated SVG to a canvas
         renderSVGtoCanvas();
-        // flock.run();
+        flock.run();
         /*
         if(easeTask.isFinished){
-            select boids
-            select directions (filter out occupied slots, and make sure two boids don't move into same slot)
+            let boids = randSetSample(flock.boids.length, 3);
+
+            // select directions (filter out occupied slots, and make sure two boids don't move into same slot)
+
+
             create set of start/end points
             create interpolation function for seleced boids+points
             initiate new easeTask

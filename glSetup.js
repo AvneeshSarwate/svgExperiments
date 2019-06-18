@@ -34,9 +34,7 @@ const arrays = {
 };
 const bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
 
-const textures = twgl.createTextures(gl, {
-    svgFrame: {src: svgCanvas}
-});
+let textures = {}; 
 
 let frameBufferIndex = 0;
 
@@ -48,11 +46,13 @@ function render(time) {
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
     twgl.setTextureFromElement(gl, textures.svgFrame, svgCanvas);
+    twgl.setTextureFromElement(gl, textures.eyeVideo1, eyeVideo1);
 
     const uniforms = {
         time: time * 0.001,
         resolution: [gl.canvas.width, gl.canvas.height],
         svgFrame: textures.svgFrame,
+        eyeVideo1: textures.eyeVideo1,
         backbuffer: frameBuffers[frameBufferIndex].attachments[0],
         circlePositions: flock.boids.map(b => [b.position.x, b.position.y]).flat(),
         circleRadii: flock.boids.map(b => b.svgElement.ry())
@@ -74,8 +74,13 @@ function render(time) {
 const headerFSreq = $.get("header.frag");
 const fsReq = $.get("eyebeamSVG.glsl");
 let programInfo = twgl.createProgramInfo(gl, ["vs", "fs"]);
-Promise.all([headerFSreq, fsReq]).then( shaderArray => {
+console.log("setting up promises", eyeVideo1.play());
+Promise.all([headerFSreq, fsReq, eyeVideo1.play()]).then( shaderArray => {
     console.log("shaderArray", shaderArray);
     programInfo = twgl.createProgramInfo(gl, ["vs", shaderArray[0]+shaderArray[1]]);
+    textures = twgl.createTextures(gl, {
+        svgFrame: {src: svgCanvas}, 
+        eyeVideo1: {src: eyeVideo1}
+    });
     requestAnimationFrame(render);
-});
+}).catch(function(err){console.log(err)});
