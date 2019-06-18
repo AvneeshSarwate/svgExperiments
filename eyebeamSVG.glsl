@@ -637,6 +637,10 @@ void main () {
     bool isInCircle = distance(flipCirlce*resolution/vec2(w, h), gl_FragCoord.xy) < circleRadii[ci]*max(resolution.x/w, resolution.y/h)*1.2;
     bool isNotBackground = svg.b != 0.;
     col = mix(col, traffic(stN, hash(vec3(5.3, 45., float(ci)))), float(isInCircle && isInBox && isNotBackground));
+    vec2 fcFlipped = vec2(gl_FragCoord.x, resolution.y -gl_FragCoord.y);
+    vec2 mappedEyeCenter = (gl_FragCoord.xy - flipCirlce*resolution/vec2(w, h))/resolution*9. + vec2(0.6, 0.5);
+    vec3 mappedEye = texture(eyeVideo1, mappedEyeCenter).rgb;
+    col = mix(col, mappedEye, float(ci % 3 == 0) * float(isInCircle && isInBox && isNotBackground));
 
     // col = mix(col, mix(bb, col, 0.3), float(isInBox));
 
@@ -644,6 +648,7 @@ void main () {
     // col = mix(red, svg, 1.-float(isInBox));
     bool isInEye1 = distance(vec2(0.6, 0.5)*resolution, gl_FragCoord.xy) < 400. * max(resolution.x/w, resolution.y/h);
     vec3 eye1 = texture(eyeVideo1, sampN).rgb;
+    vec3 eyeCrop = mix(black, eye1, float(isInEye1));
 
-    fragColor = vec4(mix(black, eye1, float(isInEye1)), 1);
+    fragColor = vec4(col, 1);
 }
