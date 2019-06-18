@@ -84,7 +84,8 @@ function render(time) {
         time: time * 0.001,
         resolution: [gl.canvas.width, gl.canvas.height],
         lastStage: frameBuffers[(frameBufferIndex+1)%2].attachments[0],
-        warpSlider: sliders[3]/127
+        warpSlider: sliders[3]/127,
+        baseCutSlider: sliders[4]/127
     }
 
     gl.useProgram(programInfo_stage2.program);

@@ -567,6 +567,7 @@ float minDistToBorder(vec2 stN){
 
 uniform sampler2D lastStage;
 uniform float warpSlider;
+uniform float baseCutSlider;
 
 out vec4 fragColor;
 
@@ -586,34 +587,18 @@ bool inBox(vec2 nn, float x1, float x2, float y1, float y2){
     return x1 < nn.x && nn.x < x2 && y1 < nn.y && nn.y < y2; 
 }
 
-
-vec3 traffic(vec2 stN, vec3 params){
-    float t2 = params.x* PI; 
-    float t3 = time/5.;
-    float t4 = time;
-    float rad = params.y;
-    vec2 warp1 = vec2(-1., 1.);
-    vec2 warp2 = vec2(0.5, 0.);
-    vec2 warpXY = mix(warp1, warp2, params.z);
-    stN = mix(stN, rotate(stN, vec2(0.5) + sin(t4)*rad, t3), sinN(stN.x*PI*(1.+sinN(t2/2.)*5.) + t2*3.) * warpXY.x*2.);
-    stN = mix(stN, rotate(stN, vec2(0.5) + cos(t4)*rad, t3), sinN(stN.y*PI*(1.+sinN(t2/2.)*5.) + t2*3.) * warpXY.y *2.);
-    // stN = mix(stN, rotate(stN, vec2(0.5), t2), sinN((distance(stN, vec2(0.5))+0.01)*PI*(1.+sinN(t2/2.)*5.) + t2*3.) * sin(time)*2.);
-    // t2 = time;
-    // stN = mix(stN, rotate(stN, vec2(0.5), t2), sinN(stN.x*PI*(1.+sinN(t2/2.)*5.) + t2*3.));
-    // stN = rotate(stN, vec2(0.5), abs(stN.x-0.5) * abs(stN.y-0.5));
-
-    
-    //take2
-    float timeVal = time+3000.;
-    stN = quant(stN, 200.);
-    vec2 stN2 = rotate(stN, vec2(0.5), time/2.);
-    vec3 c = inStripeX2(stN, timeVal/10. * (.5 + stN.x)) * inStripeY2(stN, timeVal/7. * (.5 + stN.y));
-    return c;
+float interp(float c, float a, float b, float y, float z){
+    return (c - a) * (z - y) / (b - a) + y;
 }
 
 void main () {
     vec2 stN = uvN();
-    vec2 sampN= vec2(stN.x, stN.y);
+
+    float xOffset = 0.3;
+    float yOffset = 0.3;
+    vec2 projectionScale = vec2(mix(stN.x, interp(stN.x, 0., 1., xOffset, 1.-xOffset), stN.y),  mix(stN.y, interp(stN.y, 0., 1., yOffset, 1.-yOffset), stN.x));  
+
+    vec2 sampN = stN;
     vec2 cent = vec2(0.5); 
 
     
@@ -630,6 +615,9 @@ void main () {
     warpN = mix(sampN, warpN, warpMix * float(isInBox));
 
     vec3 col = texture(lastStage, warpN).rgb;
+    col = mix(black, col, float(stN.y > baseCutSlider));
 
-    fragColor = vec4(col, 1);
+    float dist = distance(projectionScale, stN);
+
+    fragColor = vec4(vec3(col), 1);
 }
