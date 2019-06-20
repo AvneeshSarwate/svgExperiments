@@ -578,22 +578,7 @@ uniform float feedbackRotation;
 
 out vec4 fragColor;
 
-//hardcoded for now, could be made uniforms
-float lsX = 125.; //letter width
-float lsY = 272.; //letter width
-float h = 1080.;
-float w = 1920.;
-
-vec2 resposition(vec2 nn, float x, float y, float size){
-    float x2 = x+size;
-    float y2 = y+size;
-    return vec2(clamp((nn.x - x) / (x2 - x), 0.0, 1.0), clamp((nn.y - y) / (y2 - y), 0.0, 1.0));
-}
-
-bool inBox(vec2 nn, float x1, float x2, float y1, float y2){
-    return x1 < nn.x && nn.x < x2 && y1 < nn.y && nn.y < y2; 
-}
-
+uniform float rd; //image downscaling factor (same as in JS for SVG)
 
 vec3 traffic(vec2 stN, vec3 params){
     float timeScale = 0.3;
@@ -662,7 +647,17 @@ vec3 matrixCam () {
     return col;
 }
 
+bool inBox(vec2 nn, float x1, float x2, float y1, float y2){
+    return x1 < nn.x && nn.x < x2 && y1 < nn.y && nn.y < y2; 
+}
+
 void main () {
+    //hardcoded for now, could be made uniforms
+    float lsX = 125.*rd; //letter width
+    float lsY = 272.*rd; //letter width
+    float h = 1080.*rd;
+    float w = 1920.*rd;
+
     vec2 stN = uvN();
     vec2 sampN= vec2(stN.x, 1.-stN.y);
     vec2 cent = vec2(0.5); 

@@ -11,10 +11,11 @@
     <script type="text/javascript" src="twgl-full.js"></script>
     <script type="text/javascript" src="lodash.js"></script>
     <script type="text/javascript" src="WebMidi.js"></script>
+    <script type="text/javascript" src="FPSMeter.js"></script>
     <script type="text/javascript" src="boids.js"></script>
 </head>
 
-<body style="background-color: black;">
+<body style="background-color: white;">
     <svg id="eyebeam" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
         x="0px" y="0px" viewbox="0 0 1920 1080" style="enable-background:new 0 0 1920 1080; display: none;"
         xml:space="preserve">
@@ -113,12 +114,37 @@ fragColor = col;
     //make SVG manipulatable via SVG.js library
     var svgDoc = SVG.adopt($("#eyebeam")[0]);
 
+    var fpsMeter = new FPSMeter();
+
+
+    var blobVideoURLs = {};
+
     function createEyeVideo(url) {
+        var req = new XMLHttpRequest();
+        req.open('GET', url, true);
+        req.responseType = 'blob';
         let eyeVideo = document.createElement("video");
         eyeVideo.muted = true;
         eyeVideo.loop = true;
-        eyeVideo.src = url;
+        // eyeVideo.src = url;
         eyeVideo.style = "display: none;"
+        req.onload = function() {
+            // Onload is triggered even on 404
+            // so we need to check the status code
+            if (this.status === 200) {
+                var videoBlob = this.response;
+                var vidBlobUrl = URL.createObjectURL(videoBlob);
+                try {
+                    eyeVideo.src = vidBlobUrl;
+                }catch(err){
+                    console.log("blob exception", err);
+                }
+            }
+        };
+        req.onerror = function() {
+            console.log("error loading blob video for", url);
+        }
+        req.send();
         return eyeVideo;
     }
 
@@ -171,18 +197,24 @@ fragColor = col;
         return video;
     }
 
-    const eyeVideo1 = createEyeVideo("eyeblink_004.mp4");
-    const eyeVideo2 = createEyeVideo("eyeblink_005.mp4");
-    const eyeVideo3 = createEyeVideo("eyeblink_001.mp4");
+    const eyeVideo1 = createEyeVideo("eyeblink_004_low.mp4");
+    const eyeVideo2 = createEyeVideo("eyeblink_005_low.mp4");
+    const eyeVideo3 = createEyeVideo("eyeblink_001_low.mp4");
     const selfieVid = setupWebcam();
+
+
+    var rd = 0.5; //downscaling SVG for performance
+    svgDoc.size(1920*rd, 1080*rd);
+    svgDoc.viewbox(0, 0, 1920*rd, 1080*rd);
 
 
     //making copies of the initial positions/orientations of the SVG letters
     var letters = svgDoc.children()[1].children();
     var baseArrays = letters.map(elem => elem.array());
-    var basePositions = letters.map(letter => ({ x: letter.x(), y: letter.y() }));
+    var basePositions = letters.map(letter => ({ x: letter.x()*rd, y: letter.y()*rd}));
     letters.forEach((letter, i) => letter.type == "path" ? replaceVH(i, baseArrays, letters) : null);
     baseArrays = letters.map(elem => elem.array());
+    baseArrays = baseArrays.map(letter => letter.map(pt => pt.map(e => typeof e === "number" ? e*rd : e))); //mapping letters into scaled SVG coordinates
     var matricies = letters.map(elem => elem.matrixify());
     var spin = () => letters.map((p, i) => setTimeout(() => p.animate(500 * 2, "=").rotate(360 * 2), i * 100));
 
@@ -195,21 +227,25 @@ fragColor = col;
     //creating img and canvas elements used to import the SVG into a WebGL texture
     const svgImg = new Image();
     const svgCanvas = document.createElement("canvas");
-    svgCanvas.width = 1920;
-    svgCanvas.height = 1080;
+    svgCanvas.width = 1920*rd;
+    svgCanvas.height = 1080*rd;
     svgCanvas.id = "svgCanvas"
     const svgContext = svgCanvas.getContext("2d");
+
+    var xmlSerializer = new XMLSerializer();
+    var dataUrlLen = 0;
 
     //rendering the SVG to a canvas element
     function renderSVGtoCanvas() {
         var svg = document.querySelector('svg');
 
         // get svg data
-        var xml = new XMLSerializer().serializeToString(svg);
+        var xml = xmlSerializer.serializeToString(svg);
 
         // make it base64
         var svg64 = btoa(xml);
         var b64Start = 'data:image/svg+xml;base64,';
+        dataUrlLen = svg64.length;
 
         // prepend a "header"
         var image64 = b64Start + svg64;
@@ -221,12 +257,10 @@ fragColor = col;
         svgImg.onload = () => svgContext.drawImage(svgImg, 0, 0);
     }
 
-
-
     var flock;
-    var width = 1920, height = 1080;
-    var vertBorder = 272, horBorder = 125;
-    var gridX = 16, gridY = 5, gridSize = 104;
+    var width = 1920*rd, height = 1080*rd;
+    var vertBorder = 272*rd, horBorder = 125*rd;
+    var gridX = 16, gridY = 5, gridSize = 104*rd;
     var p5Ease = new p5.Ease();
     var ease = x => p5Ease.normalizedLogitSigmoid(x, .6);
     function pointEase(p1, p2, x) {
@@ -290,7 +324,7 @@ fragColor = col;
 
     //empty p5 setup function
     function setup() {
-        var width = 1920, height = 1080;
+        var width = 1920*rd, height = 1080*rd;
         flock = new Flock();
         // Add an initial set of boids into the system
         for (let i = 0; i < 20; i++) {
@@ -299,6 +333,7 @@ fragColor = col;
             let b = new Boid(horBorder + rc.x, vertBorder + rc.y, svgCreator, width, height, { x: horBorder, y: vertBorder }, gridSize);
             flock.addBoid(b);
         }
+        noLoop();
         // flock.run();
         //todo - create  initial easeTask - 
     }
@@ -335,7 +370,7 @@ fragColor = col;
     //replaced to just use requestAnimationFrame() later
     frameCount = 0;
     function draw() {
-        var width = 1920, height = 1080;
+        var width = 1920*rd, height = 1080*rd;
 
         var refTime = Date.now() / 1000;
         var increment = Date.now() / 1000 - time;
@@ -350,7 +385,7 @@ fragColor = col;
             return warp;
         }, width, height);
 
-        // transformFunc = a => a;
+        transformFunc = a => a;
         var foldRes = 50;// + 50 * sinN(time/10);
         var t2 = time / 10;
         // transformFunc = xy => ({x: xy.x*.7 + sinN(t2+xy.x/width*PI*foldRes)*0.3*width*sinN(time/1.2), 

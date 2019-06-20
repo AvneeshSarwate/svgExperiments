@@ -70,7 +70,8 @@ function render(time) {
         circlePositions: flock.boids.map(b => [b.position.x, b.position.y]).flat(),
         circleRadii: flock.boids.map(b => b.svgElement.ry()),
         cameraBlend: sliders[2]/127,
-        feedbackRotation: sliders[1]/127
+        feedbackRotation: sliders[1]/127,
+        rd: rd
     };
 
     gl.useProgram(programInfo.program);
@@ -97,7 +98,10 @@ function render(time) {
 
     frameBufferIndex = (frameBufferIndex+1)%2;
     
+    redraw();
+    fpsMeter.tick();
     requestAnimationFrame(render);
+    
 }
 
 const headerFSreq = $.get("header.frag");
