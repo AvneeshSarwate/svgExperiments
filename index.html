@@ -208,7 +208,7 @@ fragColor = col;
     const selfieVid = setupWebcam();
 
 
-    var rd = 0.5; //downscaling SVG for performance
+    var rd = 0.25; //downscaling SVG for performance
     svgDoc.size(1920*rd, 1080*rd);
     svgDoc.viewbox(0, 0, 1920*rd, 1080*rd);
 
@@ -335,7 +335,7 @@ fragColor = col;
         for (let i = 0; i < 20; i++) {
             let rc = randCell(true);
             var svgCreator = r => svgDoc.circle(r).center(horBorder + rc.x, vertBorder + rc.y).fill("rgb(" + ((i + 1) * 10 + 4) + ",0,255)");
-            let b = new Boid(horBorder + rc.x, vertBorder + rc.y, svgCreator, width, height, { x: horBorder, y: vertBorder }, gridSize);
+            let b = new Boid(horBorder + rc.x, vertBorder + rc.y, svgCreator, width, height, { x: horBorder, y: vertBorder }, gridSize, rd*2);
             flock.addBoid(b);
         }
         noLoop();

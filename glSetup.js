@@ -1,4 +1,6 @@
 const glCanvas = document.querySelector("#glCanvas");
+glCanvas.width = 1920*rd;
+glCanvas.height = 1080*rd;
 
 //can enter/exit fullscreen display with spacebar
 document.addEventListener("keyup", (event) => {
@@ -46,10 +48,10 @@ let textures = {};
 let frameBufferIndex = 0;
 
 function render(time) {
-    if(twgl.resizeCanvasToDisplaySize(gl.canvas)){
-        twgl.resizeFramebufferInfo(gl, frameBuffers[0]);
-        twgl.resizeFramebufferInfo(gl, frameBuffers[1]);
-    }
+    // if(twgl.resizeCanvasToDisplaySize(gl.canvas)){
+    //     twgl.resizeFramebufferInfo(gl, frameBuffers[0]);
+    //     twgl.resizeFramebufferInfo(gl, frameBuffers[1]);
+    // }
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
     twgl.setTextureFromElement(gl, textures.svgFrame, svgCanvas);

@@ -27,7 +27,7 @@ Flock.prototype.addBoid = function (b) {
 // Boid class
 // Methods for Separation, Cohesion, Alignment added
 
-function Boid(x, y, svgCreator, width, height, letterSize, circleSize) {
+function Boid(x, y, svgCreator, width, height, letterSize, circleSize, resAdjust) {
     this.svgElement = svgCreator(circleSize);
     this.acceleration = createVector(0, 0);
     this.velocity = createVector(random(-1, 1), random(-1, 1));
@@ -38,6 +38,7 @@ function Boid(x, y, svgCreator, width, height, letterSize, circleSize) {
     this.maxforce = 0.05; // Maximum steering force
     this.width = width;
     this.height = height;
+    this.resAdjust = resAdjust;
 }
 
 Boid.prototype.run = function (boids) {
@@ -80,7 +81,7 @@ Boid.prototype.update = function () {
     var singleDirection = createVector(isXDominant ? velMag : 0, isXDominant ? 0 : velMag);
     // this.velocity = singleDirection;
 
-    this.position.add(this.velocity);
+    this.position.add(this.velocity.mult(this.resAdjust));
     // Reset accelertion to 0 each cycle
     this.acceleration.mult(0);
 }
