@@ -1,6 +1,6 @@
 const glCanvas = document.querySelector("#glCanvas");
-glCanvas.width = 1920*rd;
-glCanvas.height = 1080*rd;
+glCanvas.width = 1920*rd*2;
+glCanvas.height = 1080*rd*2;
 
 //can enter/exit fullscreen display with spacebar
 document.addEventListener("keyup", (event) => {

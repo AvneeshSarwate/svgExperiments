@@ -202,9 +202,9 @@ fragColor = col;
         return video;
     }
 
-    const eyeVideo1 = createEyeVideo("eyeblink_004_low.mp4");
-    const eyeVideo2 = createEyeVideo("eyeblink_005_low.mp4");
-    const eyeVideo3 = createEyeVideo("eyeblink_001_low.mp4");
+    const eyeVideo1 = createEyeVideo("eyeblink_004_lower.mp4");
+    const eyeVideo2 = createEyeVideo("eyeblink_005_lower.mp4");
+    const eyeVideo3 = createEyeVideo("eyeblink_001_lower.mp4");
     const selfieVid = setupWebcam();
 
 
@@ -335,7 +335,7 @@ fragColor = col;
         for (let i = 0; i < 20; i++) {
             let rc = randCell(true);
             var svgCreator = r => svgDoc.circle(r).center(horBorder + rc.x, vertBorder + rc.y).fill("rgb(" + ((i + 1) * 10 + 4) + ",0,255)");
-            let b = new Boid(horBorder + rc.x, vertBorder + rc.y, svgCreator, width, height, { x: horBorder, y: vertBorder }, gridSize, rd*2);
+            let b = new Boid(horBorder + rc.x, vertBorder + rc.y, svgCreator, width, height, { x: horBorder, y: vertBorder }, gridSize, rd*3);
             flock.addBoid(b);
         }
         noLoop();
