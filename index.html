@@ -346,7 +346,7 @@ fragColor = col;
         //todo - create  initial easeTask - 
     }
 
-    function shuffle(a) {
+    function shuffleArray(a) {
         var j, x, i;
         for (i = a.length - 1; i > 0; i--) {
             j = Math.floor(Math.random() * (i + 1));
@@ -359,7 +359,7 @@ fragColor = col;
 
     function randSetSample(n, k) {
         let inds = Array.from(new Array(n), (e, i) => i);
-        let shuffleArr = shuffle(inds);
+        let shuffleArr = shuffleArray(inds);
         return shuffleArr.slice(0, k);
     }
 

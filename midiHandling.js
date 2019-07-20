@@ -7,9 +7,10 @@ WebMidi.enable(function (err) {
     }
     // Retrieve an input by name, id or index
     var input = WebMidi.getInputByName("from Max 1");
-
-    // Listen for a 'note on' message on all channels
-    input.addListener('controlchange', "all", function (e) {
-        sliders[e.controller.number] = e.value;
-    });
+    if(input){
+      // Listen for a 'note on' message on all channels
+      input.addListener('controlchange', "all", function (e) {
+          sliders[e.controller.number] = e.value;
+      });
+    }
 });
