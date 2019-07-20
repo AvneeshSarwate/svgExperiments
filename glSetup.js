@@ -119,22 +119,28 @@ const fsReq2 = $.get(shaderPaths.pass2);
 let programInfo;// = twgl.createProgramInfo(gl, ["vs", "fs"]);
 let programInfo_stage2;// = twgl.createProgramInfo(gl, ["vs", "fs"]);
 
-//todo - video promises won't work due to https://stackoverflow.com/a/47223508
-let shadersAndVideos = [headerFSreq, fsReq, fsReq2, eyeVideo1.play(), eyeVideo2.play(), eyeVideo3.play(), selfieVid.play()];
-console.log("setting up promises", shadersAndVideos);
-Promise.all(shadersAndVideos).then( shaderArray => {
-    console.log("shaderArray", shaderArray);
-    programInfo = twgl.createProgramInfo(gl, ["vs", shaderArray[0]+shaderArray[1]]);
-    programInfo_stage2 = twgl.createProgramInfo(gl, ["vs", shaderArray[0]+shaderArray[2]]);
+let shadersAndVideos;
+document.body.onclick = ev => {
+    console.log("clicked");
+    //todo - video promises won't work due to https://stackoverflow.com/a/47223508
+    shadersAndVideos = [headerFSreq, fsReq, fsReq2, eyeVideo1.play(), eyeVideo2.play(), eyeVideo3.play(), selfieVid.play()];
+    console.log("setting up promises", shadersAndVideos);
+    Promise.all(shadersAndVideos).then( shaderArray => {
+        console.log("shaderArray", shaderArray);
+        programInfo = twgl.createProgramInfo(gl, ["vs", shaderArray[0]+shaderArray[1]]);
+        programInfo_stage2 = twgl.createProgramInfo(gl, ["vs", shaderArray[0]+shaderArray[2]]);
 
-    textures = twgl.createTextures(gl, {
-        svgFrame: {src: svgCanvas}, 
-        eyeVideo1: {src: eyeVideo1},
-        eyeVideo2: {src: eyeVideo2},
-        eyeVideo3: {src: eyeVideo3},
-        selfieVid: {src: selfieVid}
+        textures = twgl.createTextures(gl, {
+            svgFrame: {src: svgCanvas}, 
+            eyeVideo1: {src: eyeVideo1},
+            eyeVideo2: {src: eyeVideo2},
+            eyeVideo3: {src: eyeVideo3},
+            selfieVid: {src: selfieVid}
+        });
+        requestAnimationFrame(render);
+    }).catch(function(err){
+        console.log(err)
     });
-    requestAnimationFrame(render);
-}).catch(function(err){
-    console.log(err)
-});
+
+    document.body.onclick = null;
+};
