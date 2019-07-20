@@ -4,6 +4,7 @@ WebMidi.enable(function (err) {
 
     if (err) {
       console.log("WebMidi could not be enabled.", err);
+      return;
     }
     // Retrieve an input by name, id or index
     var input = WebMidi.getInputByName("from Max 1");

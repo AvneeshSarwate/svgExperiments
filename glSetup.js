@@ -109,8 +109,8 @@ function render(time) {
 
 const shaderPaths = {
     header: webgl2Supported ? "header.frag" : "header_gl1.frag",
-    pass1: webgl2Supported ? 'eyebeamSVG.glsl' : moduleName+"/shader1_gl1.glsl",
-    pass2: webgl2Supported ? 'eyebeamSVG_stage2.glsl' : moduleName+"/shader2_gl1.glsl"
+    pass1: webgl2Supported ? 'eyebeamSVG.glsl' : "shader1_gl1.glsl",
+    pass2: webgl2Supported ? 'eyebeamSVG_stage2.glsl' : "shader2_gl1.glsl"
 };
 
 const headerFSreq = $.get(shaderPaths.header);
@@ -119,8 +119,10 @@ const fsReq2 = $.get(shaderPaths.pass2);
 let programInfo;// = twgl.createProgramInfo(gl, ["vs", "fs"]);
 let programInfo_stage2;// = twgl.createProgramInfo(gl, ["vs", "fs"]);
 
-console.log("setting up promises", eyeVideo1.play());
-Promise.all([headerFSreq, fsReq, fsReq2, eyeVideo1.play(), eyeVideo2.play(), eyeVideo3.play(), selfieVid.play()]).then( shaderArray => {
+//todo - video promises won't work due to https://stackoverflow.com/a/47223508
+let shadersAndVideos = [headerFSreq, fsReq, fsReq2, eyeVideo1.play(), eyeVideo2.play(), eyeVideo3.play(), selfieVid.play()];
+console.log("setting up promises", shadersAndVideos);
+Promise.all(shadersAndVideos).then( shaderArray => {
     console.log("shaderArray", shaderArray);
     programInfo = twgl.createProgramInfo(gl, ["vs", shaderArray[0]+shaderArray[1]]);
     programInfo_stage2 = twgl.createProgramInfo(gl, ["vs", shaderArray[0]+shaderArray[2]]);
@@ -133,4 +135,6 @@ Promise.all([headerFSreq, fsReq, fsReq2, eyeVideo1.play(), eyeVideo2.play(), eye
         selfieVid: {src: selfieVid}
     });
     requestAnimationFrame(render);
-}).catch(function(err){console.log(err)});
+}).catch(function(err){
+    console.log(err)
+});
