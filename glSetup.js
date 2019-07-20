@@ -28,7 +28,8 @@ function toggleFullScreen() {
 }
 
 //setting up 
-const gl = document.querySelector("#glCanvas").getContext("webgl2", {
+const webgl2Supported = !!document.querySelector("#glCanvas").getContext("webgl2");
+const gl = document.querySelector("#glCanvas").getContext(webgl2Supported ? "webgl2" : "webgl", {
     alpha: false,
     depth: false,
     antialias: true,
@@ -106,11 +107,17 @@ function render(time) {
     
 }
 
-const headerFSreq = $.get("header.frag");
-const fsReq = $.get("eyebeamSVG.glsl");
-const fsReq2 = $.get("eyebeamSVG_stage2.glsl");
-let programInfo = twgl.createProgramInfo(gl, ["vs", "fs"]);
-let programInfo_stage2 = twgl.createProgramInfo(gl, ["vs", "fs"]);
+const shaderPaths = {
+    header: webgl2Supported ? "header.frag" : "header_gl1.frag",
+    pass1: webgl2Supported ? 'eyebeamSVG.glsl' : moduleName+"/shader1_gl1.glsl",
+    pass2: webgl2Supported ? 'eyebeamSVG_stage2.glsl' : moduleName+"/shader2_gl1.glsl"
+};
+
+const headerFSreq = $.get(shaderPaths.header);
+const fsReq = $.get(shaderPaths.pass1);
+const fsReq2 = $.get(shaderPaths.pass2);
+let programInfo;// = twgl.createProgramInfo(gl, ["vs", "fs"]);
+let programInfo_stage2;// = twgl.createProgramInfo(gl, ["vs", "fs"]);
 
 console.log("setting up promises", eyeVideo1.play());
 Promise.all([headerFSreq, fsReq, fsReq2, eyeVideo1.play(), eyeVideo2.play(), eyeVideo3.play(), selfieVid.play()]).then( shaderArray => {
