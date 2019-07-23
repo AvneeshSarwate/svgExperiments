@@ -412,29 +412,30 @@ void main () {
     col = mix(bb, svg, 0.09);
     col = mix(col, svg, float(isInBox));
 
-    int ci = 1; //max(min(int(floor((svg.r*255./10.))-1.), 19), 0);
+    int ci = int(max(min((floor((svg.r*255./10.))-1.), 19.), 0.));
+    float ciF = float(ci);
     float circleRad = getCircleRad(ci);
     vec2 circlePos = getCirclePos(ci);
     vec2 flipFragCoord = vec2(gl_FragCoord.x, resolution.y-gl_FragCoord.y);
     vec2 flipCirlce = vec2(circlePos.x, h-circlePos.y);
     bool isInCircle = distance(flipCirlce*resolution/vec2(w, h), gl_FragCoord.xy) < circleRad*max(resolution.x/w, resolution.y/h)*1.2;
     bool isNotBackground = svg.b != 0.;
-    col = mix(col, traffic(stN, hash(vec3(5.3, 45., float(ci)))), float(isInCircle && isInBox && isNotBackground));
+    col = mix(col, traffic(stN, hash(vec3(5.3, 45., ciF))), float(isInCircle && isInBox && isNotBackground));
     vec2 fcFlipped = vec2(gl_FragCoord.x, resolution.y -gl_FragCoord.y);
 
     
     vec2 mappedEyeCenter = (gl_FragCoord.xy - flipCirlce*resolution/vec2(w, h))/resolution*9. + vec2(0.6, 0.5);
     vec3 mappedEye = texture2D(eyeVideo1, vec2(mappedEyeCenter.x, 1.-mappedEyeCenter.y)).rgb;
     //ci%5 == 0 needs to be added with whatever type works
-    col = mix(col, mappedEye, float(ci > 9) * float(ci == 0) * float(isInCircle && isInBox && isNotBackground));
+    col = mix(col, mappedEye, float(ci > 9) * float(mod(ciF, 5.) == 0.) * float(isInCircle && isInBox && isNotBackground));
 
     mappedEyeCenter = (gl_FragCoord.xy - flipCirlce*resolution/vec2(w, h))/resolution*9. + vec2(0.6, 0.5);
     mappedEye = texture2D(eyeVideo2, vec2(mappedEyeCenter.x, 1.-mappedEyeCenter.y)).rgb;
-    col = mix(col, mappedEye, float(ci > 9) * float(ci == 1) * float(isInCircle && isInBox && isNotBackground));
+    col = mix(col, mappedEye, float(ci > 9) * float(mod(ciF, 5.) == 1.) * float(isInCircle && isInBox && isNotBackground));
 
     mappedEyeCenter = (gl_FragCoord.xy - flipCirlce*resolution/vec2(w, h))/resolution*9. + vec2(0.6, 0.5);
     mappedEye = texture2D(eyeVideo3, vec2(mappedEyeCenter.x, 1.-mappedEyeCenter.y)).rgb;
-    col = mix(col, mappedEye, float(ci > 9) * float(ci == 2) * float(isInCircle && isInBox && isNotBackground));
+    col = mix(col, mappedEye, float(ci > 9) * float(mod(ciF, 5.) == 2.) * float(isInCircle && isInBox && isNotBackground));
 
 
     float noiseWarp = snoise(vec3(stN*5., time));
