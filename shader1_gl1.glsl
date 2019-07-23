@@ -360,7 +360,7 @@ bool inBox(vec2 nn, float x1, float x2, float y1, float y2){
 
 float getCircleRad(int ci){
     for(int i = 0; i < 20; i++){
-        if(i == ci) return circleRadii[ci];
+        if(i == ci) return circleRadii[i];
     }
     return 0.5;
 }
@@ -375,9 +375,9 @@ float getCircleRad2(int ci){
 
 vec2 getCirclePos(int ci){
     for(int i = 0; i < 20; i++){
-        if(i == ci) return circlePositions[ci];
+        if(i == ci) return circlePositions[i];
     }
-    return 0.5;
+    return vec2(0.5);
 }
 
 vec2 getCirclePos2(int ci){
@@ -385,7 +385,7 @@ vec2 getCirclePos2(int ci){
     for(int i = 0; i < 20; i++){
         pos = mix(pos, circlePositions[i], float(i == ci));
     }
-    return pos;
+    return vec2(pos);
 }
 
 
@@ -412,7 +412,7 @@ void main () {
     col = mix(bb, svg, 0.09);
     col = mix(col, svg, float(isInBox));
 
-    int ci = max(min(int(floor((svg.r*255./10.))-1.), 19), 0);
+    int ci = 1; //max(min(int(floor((svg.r*255./10.))-1.), 19), 0);
     float circleRad = getCircleRad(ci);
     vec2 circlePos = getCirclePos(ci);
     vec2 flipFragCoord = vec2(gl_FragCoord.x, resolution.y-gl_FragCoord.y);
@@ -425,15 +425,16 @@ void main () {
     
     vec2 mappedEyeCenter = (gl_FragCoord.xy - flipCirlce*resolution/vec2(w, h))/resolution*9. + vec2(0.6, 0.5);
     vec3 mappedEye = texture2D(eyeVideo1, vec2(mappedEyeCenter.x, 1.-mappedEyeCenter.y)).rgb;
-    col = mix(col, mappedEye, float(ci > 9) * float(ci % 5 == 0) * float(isInCircle && isInBox && isNotBackground));
+    //ci%5 == 0 needs to be added with whatever type works
+    col = mix(col, mappedEye, float(ci > 9) * float(ci == 0) * float(isInCircle && isInBox && isNotBackground));
 
     mappedEyeCenter = (gl_FragCoord.xy - flipCirlce*resolution/vec2(w, h))/resolution*9. + vec2(0.6, 0.5);
     mappedEye = texture2D(eyeVideo2, vec2(mappedEyeCenter.x, 1.-mappedEyeCenter.y)).rgb;
-    col = mix(col, mappedEye, float(ci > 9) * float(ci % 5 == 1) * float(isInCircle && isInBox && isNotBackground));
+    col = mix(col, mappedEye, float(ci > 9) * float(ci == 1) * float(isInCircle && isInBox && isNotBackground));
 
     mappedEyeCenter = (gl_FragCoord.xy - flipCirlce*resolution/vec2(w, h))/resolution*9. + vec2(0.6, 0.5);
     mappedEye = texture2D(eyeVideo3, vec2(mappedEyeCenter.x, 1.-mappedEyeCenter.y)).rgb;
-    col = mix(col, mappedEye, float(ci > 9) * float(ci % 5 == 2) * float(isInCircle && isInBox && isNotBackground));
+    col = mix(col, mappedEye, float(ci > 9) * float(ci == 2) * float(isInCircle && isInBox && isNotBackground));
 
 
     float noiseWarp = snoise(vec3(stN*5., time));

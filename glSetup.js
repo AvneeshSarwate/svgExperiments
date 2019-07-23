@@ -119,6 +119,15 @@ const fsReq2 = $.get(shaderPaths.pass2);
 let programInfo;// = twgl.createProgramInfo(gl, ["vs", "fs"]);
 let programInfo_stage2;// = twgl.createProgramInfo(gl, ["vs", "fs"]);
 
+let gl1TextureOptions = webgl2Supported ? {} : {min: gl.LINEAR, mag: gl.LINEAR, wrap: gl.CLAMP_TO_EDGE};
+
+let createTextureInfo = (srcElem, tag) => {
+    let sizeOptions = {width: srcElem.videoWidth, height: srcElem.videoHeight};
+    let info = Object.assign({src: srcElem, elemName: tag}, gl1TextureOptions);
+    if(sizeOptions.height) return Object.assign(info, sizeOptions);
+    else return info;
+}
+
 let shadersAndVideos;
 document.body.onclick = ev => {
     console.log("clicked");
@@ -127,16 +136,21 @@ document.body.onclick = ev => {
     console.log("setting up promises", shadersAndVideos);
     Promise.all(shadersAndVideos).then( shaderArray => {
         console.log("shaderArray", shaderArray);
-        programInfo = twgl.createProgramInfo(gl, ["vs", shaderArray[0]+shaderArray[1]]);
-        programInfo_stage2 = twgl.createProgramInfo(gl, ["vs", shaderArray[0]+shaderArray[2]]);
+    
+        const glTextureSources = {
+            svgFrame: createTextureInfo(svgCanvas, "svg"), 
+            eyeVideo1: createTextureInfo(eyeVideo1, "vid1"),
+            eyeVideo2: createTextureInfo(eyeVideo2, "vid2"),
+            eyeVideo3: createTextureInfo(eyeVideo3, "vid3"),
+            selfieVid: createTextureInfo(selfieVid, "cam")
+        };
 
-        textures = twgl.createTextures(gl, {
-            svgFrame: {src: svgCanvas}, 
-            eyeVideo1: {src: eyeVideo1},
-            eyeVideo2: {src: eyeVideo2},
-            eyeVideo3: {src: eyeVideo3},
-            selfieVid: {src: selfieVid}
-        });
+        textures = twgl.createTextures(gl, glTextureSources);
+
+        programInfo = twgl.createProgramInfo(gl, [webgl2Supported ? "vs" : "vs_gl1", shaderArray[0]+shaderArray[1]]);
+        programInfo_stage2 = twgl.createProgramInfo(gl, [webgl2Supported ? "vs" : "vs_gl1", shaderArray[0]+shaderArray[2]]);
+
+
         requestAnimationFrame(render);
     }).catch(function(err){
         console.log(err)

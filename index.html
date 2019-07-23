@@ -88,6 +88,17 @@ void main() {
 gl_Position = position;
 }
 </script>
+<script id="vs_gl1" type="notjs">
+
+precision lowp float;
+
+attribute vec2 position;
+
+void main()
+{
+    gl_Position = vec4( position , 0, 1);
+}
+</script>
 <script id="fs" type="notjs">
 #version 300 es
 precision mediump float;
