@@ -129,9 +129,8 @@ let createTextureInfo = (srcElem, tag) => {
 }
 
 let shadersAndVideos;
-document.body.onclick = ev => {
+let initializer = ev => {
     console.log("clicked");
-    //todo - video promises won't work due to https://stackoverflow.com/a/47223508
     shadersAndVideos = [headerFSreq, fsReq, fsReq2, eyeVideo1.play(), eyeVideo2.play(), eyeVideo3.play(), selfieVid.play()];
     console.log("setting up promises", shadersAndVideos);
     Promise.all(shadersAndVideos).then( shaderArray => {
@@ -156,5 +155,8 @@ document.body.onclick = ev => {
         console.log(err)
     });
 
-    document.body.onclick = null;
+    if(!webgl2Supported) document.body.onclick = null;
 };
+
+if(webgl2Supported) initializer();
+else document.body.onclick = initializer;

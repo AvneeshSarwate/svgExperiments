@@ -100,7 +100,7 @@ fragColor = col;
         const video = document.createElement('video');
 
 
-        var hasUserMedia = navigator.webkitGetUserMedia ? true : false;
+        var hasUserMedia = navigator.mediaDevices.getUserMedia ? true : false;
 
         if (!hasUserMedia) return createEyeVideo("selfie.mp4");
 
@@ -148,6 +148,8 @@ fragColor = col;
     const eyeVideo2 = createEyeVideo("eyeblink_005_lower.mp4");
     const eyeVideo3 = createEyeVideo("eyeblink_001_lower.mp4");
     const selfieVid = setupWebcam();
+    document.body.append(selfieVid);
+
 
     let videoPromises;
 

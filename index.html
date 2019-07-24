@@ -172,7 +172,7 @@ fragColor = col;
         const video = document.createElement('video');
 
 
-        var hasUserMedia = navigator.webkitGetUserMedia ? true : false;
+        var hasUserMedia = navigator.mediaDevices.getUserMedia ? true : false;
 
         if (!hasUserMedia) return createEyeVideo("selfie.mp4");
 
@@ -196,7 +196,7 @@ fragColor = col;
             checkReady();
         }, true);
 
-        var constraints = { video: { width: 1280, height: 720 } };
+        var constraints = { video: { width: 1280 * rd, height: 720 * rd} };
 
         navigator.mediaDevices.getUserMedia(constraints)
             .then(function (mediaStream) {
@@ -220,7 +220,7 @@ fragColor = col;
     const eyeVideo2 = createEyeVideo("eyeblink_005_lower.mp4");
     const eyeVideo3 = createEyeVideo("eyeblink_001_lower.mp4");
     const selfieVid = setupWebcam();
-
+    // document.body.append(selfieVid);
 
     var rd = 0.25; //downscaling SVG for performance
     svgDoc.size(1920 * rd, 1080 * rd);
